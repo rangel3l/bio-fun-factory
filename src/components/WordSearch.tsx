@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Search, Clock, Target } from 'lucide-react';
+import { CheckCircle, Search, Clock, Target, Printer } from 'lucide-react';
+import { generateWordSearchPDF } from '../utils/pdfGenerator';
 
 const words = [
   'CARBONO', 'SUSTENTABILIDADE', 'RECICLAGEM', 'BIODIVERSIDADE', 'SOLAR',
@@ -237,6 +237,10 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handlePrintPDF = () => {
+    generateWordSearchPDF(grid, words);
+  };
+
   if (isCompleted) {
     const finalScore = score + Math.floor(timeLeft / 10);
     const percentage = Math.round((foundWords.length / words.length) * 100);
@@ -281,7 +285,7 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid md:grid-cols-4 gap-6 mb-8">
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardContent className="flex items-center gap-3 p-4">
             <Clock className="w-6 h-6 text-green-600" />
@@ -309,6 +313,19 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
               <div className="text-2xl font-bold text-green-800">{foundWords.length}/{words.length}</div>
               <div className="text-sm text-green-600">Palavras encontradas</div>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
+          <CardContent className="flex items-center justify-center p-4">
+            <Button 
+              variant="outline" 
+              onClick={handlePrintPDF}
+              className="flex items-center gap-2 w-full"
+            >
+              <Printer className="w-4 h-4" />
+              Imprimir PDF
+            </Button>
           </CardContent>
         </Card>
       </div>

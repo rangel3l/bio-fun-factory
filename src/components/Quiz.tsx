@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, XCircle, Clock, Lightbulb } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Lightbulb, Printer } from 'lucide-react';
+import { generateQuizPDF } from '../utils/pdfGenerator';
 
 interface Question {
   id: number;
@@ -168,6 +168,10 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     }
   };
 
+  const handlePrintPDF = () => {
+    generateQuizPDF(questions);
+  };
+
   const nextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
@@ -235,6 +239,14 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
             Questão {currentQuestion + 1} de {questions.length}
           </Badge>
           <div className="flex items-center gap-4">
+            <Button 
+              variant="outline" 
+              onClick={handlePrintPDF}
+              className="flex items-center gap-2"
+            >
+              <Printer className="w-4 h-4" />
+              Imprimir PDF
+            </Button>
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5 text-green-600" />
               <span className={`text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-600'}`}>
