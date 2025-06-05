@@ -126,10 +126,10 @@ export const generateCrosswordPDF = () => {
   // Instruções
   doc.text('Complete as palavras cruzadas com termos relacionados à sustentabilidade:', 20, 50);
   
-  // Grid das palavras cruzadas - ajustado para orientação horizontal
-  const gridStartY = 70;
-  const gridStartX = 20; // Começar mais à esquerda
-  const cellSize = 12; // Aumentar um pouco o tamanho das células
+  // Grid das palavras cruzadas - movido 2cm mais alto (aproximadamente 57 pontos)
+  const gridStartY = 13; // Reduzido de 70 para 13 (aproximadamente 2cm mais alto)
+  const gridStartX = 20;
+  const cellSize = 12;
   const gridSize = 15;
   
   // Definir as palavras e suas posições (mesmas do componente)
@@ -184,16 +184,21 @@ export const generateCrosswordPDF = () => {
     }
   }
   
-  // Dicas lado a lado - aproveitando o espaço horizontal
-  const cluesStartX = gridStartX + (gridSize * cellSize) + 20; // Posicionar à direita do grid
-  const cluesStartY = gridStartY;
+  // Dicas posicionadas no topo da página (mesma linha do nome em x)
+  const cluesStartX = gridStartX + (gridSize * cellSize) + 20;
+  const cluesStartY = 20; // Mesma altura do título
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
   
   doc.setFontSize(14);
   doc.text('DICAS', cluesStartX, cluesStartY);
   
+  let currentY = cluesStartY + 20;
+  
   // Dicas horizontais
   doc.setFontSize(12);
-  doc.text('HORIZONTAL:', cluesStartX, cluesStartY + 20);
+  doc.text('HORIZONTAL:', cluesStartX, currentY);
+  currentY += 10;
   
   const horizontalClues = [
     '1. Desenvolvimento que atende às necessidades presentes',
@@ -206,13 +211,28 @@ export const generateCrosswordPDF = () => {
   ];
   
   horizontalClues.forEach((clue, index) => {
+    // Verificar se precisa quebrar a página
+    if (currentY > pageHeight - 30) {
+      doc.addPage();
+      currentY = 20;
+    }
+    
     doc.setFontSize(9);
-    doc.text(clue, cluesStartX, cluesStartY + 30 + (index * 10));
+    doc.text(clue, cluesStartX, currentY);
+    currentY += 10;
   });
+  
+  currentY += 10; // Espaço entre seções
   
   // Dicas verticais
   doc.setFontSize(12);
-  doc.text('VERTICAL:', cluesStartX, cluesStartY + 110);
+  // Verificar se precisa quebrar a página
+  if (currentY > pageHeight - 30) {
+    doc.addPage();
+    currentY = 20;
+  }
+  doc.text('VERTICAL:', cluesStartX, currentY);
+  currentY += 10;
   
   const verticalClues = [
     '2. Processo de transformação de resíduos',
@@ -225,8 +245,15 @@ export const generateCrosswordPDF = () => {
   ];
   
   verticalClues.forEach((clue, index) => {
+    // Verificar se precisa quebrar a página
+    if (currentY > pageHeight - 30) {
+      doc.addPage();
+      currentY = 20;
+    }
+    
     doc.setFontSize(9);
-    doc.text(clue, cluesStartX, cluesStartY + 120 + (index * 10));
+    doc.text(clue, cluesStartX, currentY);
+    currentY += 10;
   });
 
   // Adicionar créditos
