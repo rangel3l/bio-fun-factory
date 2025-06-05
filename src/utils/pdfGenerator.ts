@@ -126,8 +126,8 @@ export const generateCrosswordPDF = () => {
   // Instruções
   doc.text('Complete as palavras cruzadas com termos relacionados à sustentabilidade:', 20, 50);
   
-  // Grid das palavras cruzadas - movido 2cm mais alto (aproximadamente 57 pontos)
-  const gridStartY = 13; // Reduzido de 70 para 13 (aproximadamente 2cm mais alto)
+  // Grid das palavras cruzadas - começar logo abaixo das instruções com 0,5cm de espaçamento
+  const gridStartY = 64; // 50 + 14 pontos (aproximadamente 0,5cm)
   const gridStartX = 20;
   const cellSize = 12;
   const gridSize = 15;
