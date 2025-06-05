@@ -52,6 +52,40 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
     }
   }, [timeLeft, isCompleted, score, onComplete]);
 
+  // Add this useEffect to lock body scroll when the component mounts
+  useEffect(() => {
+    // Lock the body scroll when the component mounts
+    document.body.classList.add('playing-word-search');
+    
+    // Cleanup - restore scrolling when component unmounts
+    return () => {
+      document.body.classList.remove('playing-word-search');
+    };
+  }, []);
+
+  // Add this useEffect to prevent default touch events on the game container
+  useEffect(() => {
+    const gameContainer = document.querySelector('.word-search-container');
+    
+    const preventDefaultTouch = (e: TouchEvent) => {
+      e.preventDefault();
+    };
+    
+    if (gameContainer) {
+      gameContainer.addEventListener('touchstart', preventDefaultTouch, { passive: false });
+      gameContainer.addEventListener('touchmove', preventDefaultTouch, { passive: false });
+      gameContainer.addEventListener('touchend', preventDefaultTouch, { passive: false });
+    }
+    
+    return () => {
+      if (gameContainer) {
+        gameContainer.removeEventListener('touchstart', preventDefaultTouch);
+        gameContainer.removeEventListener('touchmove', preventDefaultTouch);
+        gameContainer.removeEventListener('touchend', preventDefaultTouch);
+      }
+    };
+  }, []);
+  
   const generateGrid = () => {
     const newGrid: Cell[][] = Array(gridSize).fill(null).map(() =>
       Array(gridSize).fill(null).map(() => ({
@@ -350,16 +384,19 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
             </CardHeader>
             <CardContent>
               <div 
-                className="grid gap-0.5 sm:gap-1 p-2 sm:p-4 bg-green-50 rounded-lg select-none mx-auto"
+                className="word-search-container grid gap-0.5 sm:gap-1 p-2 sm:p-4 bg-green-50 rounded-lg select-none mx-auto touch-none"
                 style={{ 
                   gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-                  width: "fit-content" 
+                  width: "fit-content",
+                  touchAction: "none"
                 }}
                 onMouseLeave={() => {
                   if (isDragging) {
                     handleMouseUp();
                   }
                 }}
+                onTouchStart={(e) => e.preventDefault()} // Prevent scrolling on touch start
+                onTouchMove={(e) => e.preventDefault()} // Prevent any movement of the screen
               >
                 {grid.map((row, rowIndex) =>
                   row.map((cell, colIndex) => {
@@ -382,9 +419,26 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
                         onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
                         onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
                         onMouseUp={handleMouseUp}
-                        onTouchStart={() => handleCellMouseDown(rowIndex, colIndex)}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleMouseUp}
+                        onTouchStart={(e) => {
+                          e.preventDefault(); // Prevent default touch behavior
+                          handleCellMouseDown(rowIndex, colIndex);
+                        }}
+                        onTouchMove={(e) => {
+                          e.preventDefault(); // Prevent scrolling
+                          const touch = e.touches[0];
+                          const element = document.elementFromPoint(touch.clientX, touch.clientY);
+                          if (element) {
+                            const cellCoords = element.getAttribute('data-cell');
+                            if (cellCoords) {
+                              const [row, col] = cellCoords.split('-').map(Number);
+                              handleCellMouseEnter(row, col);
+                            }
+                          }
+                        }}
+                        onTouchEnd={(e) => {
+                          e.preventDefault();
+                          handleMouseUp();
+                        }}
                         data-cell={`${rowIndex}-${colIndex}`}
                       >
                         {cell.letter}
@@ -401,8 +455,7 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
         <div>
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-green-800 text-base sm:text-xl">Palavras para encontrar</CardTitle>
-              <Progress value={(foundWords.length / words.length) * 100} className="h-2" />
+              <CardTitle className="text-green-800 text-base sm:text-xl">Palavras Encontradas</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-1 sm:gap-2">
@@ -410,13 +463,8 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
                   const isFound = foundWords.some(fw => fw.word === word);
                   return (
                     <Badge 
-                      key={index}
-                      variant="outline"
-                      className={`text-xs sm:text-sm px-2 py-1 ${
-                        isFound 
-                          ? 'bg-green-100 text-green-700 border-green-300 line-through'
-                          : 'bg-white border-gray-200'
-                      }`}
+                      key={index} 
+                      className={`text-xs sm:text-sm px-2 py-1 ${isFound ? 'bg-green-100 text-green-700 border-green-300 line-through' : 'bg-white border-gray-200'}`}
                     >
                       {isFound ? '✓ ' : ''}{word}
                     </Badge>
@@ -425,7 +473,7 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
               </div>
             </CardContent>
           </Card>
-          
+
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm mt-4">
             <CardHeader>
               <CardTitle className="text-green-800 text-base sm:text-xl">Como Jogar</CardTitle>

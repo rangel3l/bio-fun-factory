@@ -27,20 +27,31 @@ html {
     padding: 0.75rem !important;
   }
   
-  /* Prevent touch input issues with games */
-  [data-cell] {
-    touch-action: none;
-  }
-  
-  /* Adjust the input font-size to prevent zoom on iOS */
+  /* Prevent input issues on iOS */
   input {
     font-size: 16px !important;
   }
+
+  /* Fix for the word search game */
+  [data-cell] {
+    touch-action: none !important;
+  }
 }
 
-/* Prevent pinch zoom on game components */
-.prevent-zoom {
-  touch-action: pan-x pan-y;
+/* Specifically for the word search grid */
+[data-cell] {
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: none;
+}
+
+.touch-none {
+  touch-action: none !important;
+  -ms-touch-action: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /* Fix for sticky hover states on mobile */
@@ -55,4 +66,12 @@ html {
 /* Improve scrolling performance */
 * {
   -webkit-overflow-scrolling: touch;
+}
+
+/* Lock body scroll when playing word search */
+body.playing-word-search {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
