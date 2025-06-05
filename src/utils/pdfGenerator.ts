@@ -115,50 +115,98 @@ export const generateCrosswordPDF = () => {
   // Instruções
   doc.text('Complete as palavras cruzadas com termos relacionados à sustentabilidade:', 20, 50);
   
-  // Grid das palavras cruzadas (exemplo simplificado)
+  // Grid das palavras cruzadas
   const gridStartY = 70;
   const cellSize = 12;
+  const gridSize = 15;
   
-  // Criar um grid exemplo 10x10
-  for (let row = 0; row < 10; row++) {
-    for (let col = 0; col < 10; col++) {
+  // Definir as palavras e suas posições
+  const words = [
+    { word: 'SUSTENTABILIDADE', startRow: 2, startCol: 1, direction: 'horizontal', number: 1 },
+    { word: 'RECICLAGEM', startRow: 0, startCol: 1, direction: 'vertical', number: 2 },
+    { word: 'BIODIVERSIDADE', startRow: 4, startCol: 0, direction: 'horizontal', number: 3 },
+    { word: 'CARBONO', startRow: 1, startCol: 5, direction: 'vertical', number: 4 },
+    { word: 'AGUA', startRow: 6, startCol: 2, direction: 'horizontal', number: 5 },
+    { word: 'SOLAR', startRow: 2, startCol: 7, direction: 'vertical', number: 6 },
+    { word: 'FLORESTA', startRow: 8, startCol: 1, direction: 'horizontal', number: 7 },
+    { word: 'POLUICAO', startRow: 1, startCol: 11, direction: 'vertical', number: 8 },
+    { word: 'VERDE', startRow: 0, startCol: 9, direction: 'horizontal', number: 9 },
+    { word: 'CLIMA', startRow: 5, startCol: 6, direction: 'vertical', number: 10 },
+    { word: 'ECO', startRow: 7, startCol: 0, direction: 'horizontal', number: 11 },
+    { word: 'OXIGENIO', startRow: 3, startCol: 13, direction: 'vertical', number: 12 },
+    { word: 'TERRA', startRow: 10, startCol: 3, direction: 'horizontal', number: 13 },
+    { word: 'NATUREZA', startRow: 0, startCol: 0, direction: 'vertical', number: 14 }
+  ];
+
+  // Criar grid em branco
+  const grid: boolean[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(false));
+
+  // Marcar células que fazem parte das palavras
+  words.forEach(wordDef => {
+    const { word, startRow, startCol, direction } = wordDef;
+    for (let i = 0; i < word.length; i++) {
+      const row = direction === 'horizontal' ? startRow : startRow + i;
+      const col = direction === 'horizontal' ? startCol + i : startCol;
+      if (row < gridSize && col < gridSize) {
+        grid[row][col] = true;
+      }
+    }
+  });
+
+  // Desenhar o grid
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
       const x = 50 + col * cellSize;
       const y = gridStartY + row * cellSize;
       
-      // Algumas células ficam em branco (padrão de palavras cruzadas)
-      if ((row + col) % 3 !== 0) {
+      if (grid[row][col]) {
         doc.rect(x, y, cellSize, cellSize);
+        
+        // Adicionar números das palavras que começam nesta célula
+        const wordStart = words.find(w => w.startRow === row && w.startCol === col);
+        if (wordStart) {
+          doc.setFontSize(8);
+          doc.text(wordStart.number.toString(), x + 1, y + 7);
+        }
       }
     }
   }
   
   // Dicas
-  const cluesStartY = gridStartY + (10 * cellSize) + 20;
+  const cluesStartY = gridStartY + (gridSize * cellSize) + 20;
   doc.setFontSize(14);
   doc.text('HORIZONTAL:', 20, cluesStartY);
   
   const horizontalClues = [
-    '1. Gás responsável pelo efeito estufa (7 letras)',
-    '3. Processo de decomposição de resíduos orgânicos (11 letras)',
-    '5. Fonte de energia renovável (5 letras)'
+    '1. Desenvolvimento que atende às necessidades presentes sem comprometer o futuro',
+    '3. Variedade de formas de vida na Terra',
+    '5. Recurso natural essencial para a vida',
+    '7. Ecossistema rico em árvores e biodiversidade',
+    '9. Cor associada à natureza e sustentabilidade',
+    '11. Prefixo relacionado ao meio ambiente',
+    '13. Nosso planeta azul'
   ];
   
   horizontalClues.forEach((clue, index) => {
-    doc.setFontSize(10);
+    doc.setFontSize(9);
     doc.text(clue, 25, cluesStartY + 10 + (index * 8));
   });
   
-  doc.text('VERTICAL:', 120, cluesStartY);
+  doc.text('VERTICAL:', 20, cluesStartY + 70);
   
   const verticalClues = [
-    '2. Variedade de espécies (13 letras)',
-    '4. Área de proteção ambiental (11 letras)',
-    '6. Reutilização de materiais (9 letras)'
+    '2. Processo de transformação de resíduos em novos produtos',
+    '4. Principal elemento responsável pelo efeito estufa',
+    '6. Tipo de energia renovável obtida do sol',
+    '8. Contaminação do meio ambiente',
+    '10. Condições atmosféricas de uma região',
+    '12. Gás vital produzido pelas plantas',
+    '14. Conjunto de todos os seres vivos e não vivos'
   ];
   
   verticalClues.forEach((clue, index) => {
-    doc.setFontSize(10);
-    doc.text(clue, 125, cluesStartY + 10 + (index * 8));
+    doc.setFontSize(9);
+    doc.text(clue, 25, cluesStartY + 80 + (index * 8));
   });
   
   doc.save('palavras-cruzadas-verdes.pdf');
