@@ -57,6 +57,11 @@ export const generateQuizPDF = (questions: any[]) => {
     yPosition += 15;
   });
 
+  // Adicionar créditos
+  const finalPageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(8);
+  doc.text('Desenvolvido por Rangel Gomes | Design por Laissa Pinho e Davi Ivad', 20, finalPageHeight - 10);
+
   doc.save('quiz-sustentabilidade.pdf');
 };
 
@@ -98,6 +103,11 @@ export const generateWordSearchPDF = (grid: any[][], words: string[]) => {
     const y = wordsStartY + 15 + Math.floor(index / 3) * 10;
     doc.text(`• ${word}`, x, y);
   });
+
+  // Adicionar créditos
+  const finalPageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(8);
+  doc.text('Desenvolvido por Rangel Gomes | Design por Laissa Pinho e Davi Ivad', 20, finalPageHeight - 10);
   
   doc.save('caca-palavras-ecologico.pdf');
 };
@@ -117,10 +127,10 @@ export const generateCrosswordPDF = () => {
   
   // Grid das palavras cruzadas
   const gridStartY = 70;
-  const cellSize = 12;
+  const cellSize = 10; // Reduzido para caber melhor
   const gridSize = 15;
   
-  // Definir as palavras e suas posições
+  // Definir as palavras e suas posições (mesmas do componente)
   const words = [
     { word: 'SUSTENTABILIDADE', startRow: 2, startCol: 1, direction: 'horizontal', number: 1 },
     { word: 'RECICLAGEM', startRow: 0, startCol: 1, direction: 'vertical', number: 2 },
@@ -153,10 +163,11 @@ export const generateCrosswordPDF = () => {
     }
   });
 
-  // Desenhar o grid
+  // Desenhar o grid centralizado
+  const gridStartX = 60; // Centralizar melhor
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
-      const x = 50 + col * cellSize;
+      const x = gridStartX + col * cellSize;
       const y = gridStartY + row * cellSize;
       
       if (grid[row][col]) {
@@ -165,49 +176,60 @@ export const generateCrosswordPDF = () => {
         // Adicionar números das palavras que começam nesta célula
         const wordStart = words.find(w => w.startRow === row && w.startCol === col);
         if (wordStart) {
-          doc.setFontSize(8);
-          doc.text(wordStart.number.toString(), x + 1, y + 7);
+          doc.setFontSize(7);
+          doc.text(wordStart.number.toString(), x + 1, y + 6);
         }
       }
     }
   }
   
-  // Dicas
-  const cluesStartY = gridStartY + (gridSize * cellSize) + 20;
-  doc.setFontSize(14);
-  doc.text('HORIZONTAL:', 20, cluesStartY);
+  // Dicas em duas colunas para economizar espaço
+  const cluesStartY = gridStartY + (gridSize * cellSize) + 15;
+  doc.setFontSize(12);
+  doc.text('DICAS:', 20, cluesStartY);
+  
+  // Dicas horizontais (coluna esquerda)
+  doc.setFontSize(10);
+  doc.text('HORIZONTAL:', 20, cluesStartY + 15);
   
   const horizontalClues = [
-    '1. Desenvolvimento que atende às necessidades presentes sem comprometer o futuro',
+    '1. Desenvolvimento que atende às necessidades presentes',
     '3. Variedade de formas de vida na Terra',
     '5. Recurso natural essencial para a vida',
-    '7. Ecossistema rico em árvores e biodiversidade',
-    '9. Cor associada à natureza e sustentabilidade',
+    '7. Ecossistema rico em árvores',
+    '9. Cor associada à natureza',
     '11. Prefixo relacionado ao meio ambiente',
     '13. Nosso planeta azul'
   ];
   
   horizontalClues.forEach((clue, index) => {
-    doc.setFontSize(9);
-    doc.text(clue, 25, cluesStartY + 10 + (index * 8));
+    doc.setFontSize(8);
+    doc.text(clue, 25, cluesStartY + 25 + (index * 8));
   });
   
-  doc.text('VERTICAL:', 20, cluesStartY + 70);
+  // Dicas verticais (coluna direita)
+  doc.setFontSize(10);
+  doc.text('VERTICAL:', 110, cluesStartY + 15);
   
   const verticalClues = [
-    '2. Processo de transformação de resíduos em novos produtos',
-    '4. Principal elemento responsável pelo efeito estufa',
-    '6. Tipo de energia renovável obtida do sol',
+    '2. Processo de transformação de resíduos',
+    '4. Principal elemento do efeito estufa',
+    '6. Energia renovável do sol',
     '8. Contaminação do meio ambiente',
-    '10. Condições atmosféricas de uma região',
-    '12. Gás vital produzido pelas plantas',
-    '14. Conjunto de todos os seres vivos e não vivos'
+    '10. Condições atmosféricas',
+    '12. Gás vital das plantas',
+    '14. Conjunto de seres vivos'
   ];
   
   verticalClues.forEach((clue, index) => {
-    doc.setFontSize(9);
-    doc.text(clue, 25, cluesStartY + 80 + (index * 8));
+    doc.setFontSize(8);
+    doc.text(clue, 115, cluesStartY + 25 + (index * 8));
   });
+
+  // Adicionar créditos
+  const finalPageHeight = doc.internal.pageSize.height;
+  doc.setFontSize(8);
+  doc.text('Desenvolvido por Rangel Gomes | Design por Laissa Pinho e Davi Ivad', 20, finalPageHeight - 10);
   
   doc.save('palavras-cruzadas-verdes.pdf');
 };
