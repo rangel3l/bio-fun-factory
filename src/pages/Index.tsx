@@ -56,18 +56,18 @@ const Index = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-        <div className={`container mx-auto px-4 py-8 transition-all duration-300`}>
-          <div className="mb-6 flex items-center justify-between">
+        <div className={`container mx-auto px-2 sm:px-4 py-4 sm:py-8 transition-all duration-300`}>
+          <div className="mb-4 sm:mb-6 flex items-center justify-between">
             <Button 
               variant="outline" 
               onClick={() => setActiveGame('home')}
               className="hover:bg-green-50"
             >
-              ← Voltar ao Menu
+              ← Voltar
             </Button>
-            <div className="flex items-center gap-4">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
-                <Trophy className="w-4 h-4 mr-2" />
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Badge variant="secondary" className="text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
+                <Trophy className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Pontos: {totalScore}
               </Badge>
             </div>
@@ -82,24 +82,24 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-sm border-b border-green-200 sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
-                <Leaf className="w-8 h-8 text-white" />
+              <div className="p-2 sm:p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                <Leaf className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-              <div>
-                <h1 className="text-3xl font-bold text-green-800">BioCiência Interativa</h1>
-                <p className="text-green-600">Sustentabilidade e Meio Ambiente</p>
+              <div className="text-center sm:text-left">
+                <h1 className="text-xl sm:text-3xl font-bold text-green-800">BioCiência Interativa</h1>
+                <p className="text-sm sm:text-base text-green-600">Sustentabilidade e Meio Ambiente</p>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <Badge variant="secondary" className="text-lg px-4 py-2">
-                <Trophy className="w-5 h-5 mr-2" />
+            <div className="flex items-center gap-2 sm:gap-4 mt-2 sm:mt-0">
+              <Badge variant="secondary" className="text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
+                <Trophy className="w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                 {totalScore} pontos
               </Badge>
-              <Badge variant="outline" className="text-lg px-4 py-2">
-                <Users className="w-5 h-5 mr-2" />
+              <Badge variant="outline" className="text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
+                <Users className="w-3 h-3 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
                 {completedGames.length}/3 jogos
               </Badge>
             </div>
@@ -107,21 +107,21 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="container mx-auto px-3 sm:px-4 py-8 sm:py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h2 className="text-5xl font-bold text-green-800 mb-6 animate-fade-in">
+        <div className="text-center mb-10 sm:mb-16">
+          <h2 className="text-3xl sm:text-5xl font-bold text-green-800 mb-4 sm:mb-6 animate-fade-in">
             Aprenda Biologia de Forma Divertida!
           </h2>
-          <p className="text-xl text-green-600 max-w-3xl mx-auto mb-8 animate-fade-in">
+          <p className="text-base sm:text-xl text-green-600 max-w-3xl mx-auto mb-6 sm:mb-8 animate-fade-in">
             Explore conceitos importantes sobre sustentabilidade, conservação e meio ambiente 
             através de jogos educativos interativos. Perfeito para estudantes e visitantes!
           </p>
-          <div className="w-32 h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto rounded-full animate-scale-in"></div>
+          <div className="w-20 sm:w-32 h-1 bg-gradient-to-r from-green-500 to-emerald-500 mx-auto rounded-full animate-scale-in"></div>
         </div>
 
         {/* Progress Overview */}
-        <Card className="mb-12 border-green-200 bg-white/60 backdrop-blur-sm animate-scale-in">
+        <Card className="mb-8 sm:mb-12 border-green-200 bg-white/60 backdrop-blur-sm animate-scale-in">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-green-800">
               <Trophy className="w-6 h-6" />
@@ -159,7 +159,7 @@ const Index = () => {
         </Card>
 
         {/* Games Grid */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12">
           {games.map((game, index) => (
             <Card 
               key={game.id} 

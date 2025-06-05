@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -154,9 +153,9 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   // Don't render the grid until it's initialized
   if (!isGridInitialized) {
     return (
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto px-3 sm:px-0">
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center justify-center p-8">
+          <CardContent className="flex items-center justify-center p-4 sm:p-8">
             <div className="text-green-600">Carregando palavras cruzadas...</div>
           </CardContent>
         </Card>
@@ -169,31 +168,31 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
     const percentage = Math.round((completedWords.length / words.length) * 100);
 
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto px-3 sm:px-0">
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-green-800 mb-4">
+            <CardTitle className="text-2xl sm:text-3xl text-green-800 mb-4">
               🧩 Palavras Cruzadas Concluídas!
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div className="space-y-4">
-              <div className="text-6xl font-bold text-green-600">{finalScore}</div>
-              <div className="text-xl text-green-700">pontos totais</div>
-              <div className="text-lg text-green-600">
+          <CardContent className="text-center space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="text-4xl sm:text-6xl font-bold text-green-600">{finalScore}</div>
+              <div className="text-lg sm:text-xl text-green-700">pontos totais</div>
+              <div className="text-base sm:text-lg text-green-600">
                 {completedWords.length} de {words.length} palavras completadas ({percentage}%)
               </div>
             </div>
             
-            <Progress value={percentage} className="h-4" />
+            <Progress value={percentage} className="h-3 sm:h-4" />
             
-            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-              <h3 className="text-lg font-semibold text-green-800 mb-4">
+            <div className="bg-green-50 p-4 sm:p-6 rounded-lg border border-green-200">
+              <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-4">
                 Palavras completadas:
               </h3>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {completedWords.map((word, index) => (
-                  <Badge key={index} className="bg-green-100 text-green-700">
+                  <Badge key={index} className="bg-green-100 text-green-700 text-xs sm:text-base">
                     ✓ {word}
                   </Badge>
                 ))}
@@ -206,65 +205,71 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-2 sm:px-0">
       {/* Header */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Clock className="w-6 h-6 text-green-600" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-6 mb-6 sm:mb-8">
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm col-span-1 sm:col-span-2 md:col-span-1">
+          <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-800">{formatTime(timeLeft)}</div>
-              <div className="text-sm text-green-600">Tempo restante</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-800">{formatTime(timeLeft)}</div>
+              <div className="text-xs sm:text-sm text-green-600">Tempo restante</div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Target className="w-6 h-6 text-green-600" />
+          <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-800">{score}</div>
-              <div className="text-sm text-green-600">Pontos</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-800">{score}</div>
+              <div className="text-xs sm:text-sm text-green-600">Pontos</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Grid3X3 className="w-6 h-6 text-green-600" />
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm col-span-2 sm:col-span-1">
+          <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+            <Grid3X3 className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-800">{completedWords.length}/{words.length}</div>
-              <div className="text-sm text-green-600">Palavras completadas</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-800">{completedWords.length}/{words.length}</div>
+              <div className="text-xs sm:text-sm text-green-600">Palavras completadas</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center justify-center p-4">
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm col-span-2 sm:col-span-1">
+          <CardContent className="flex items-center justify-center p-3 sm:p-4">
             <Button 
               variant="outline" 
               onClick={handlePrintPDF}
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full"
             >
               <Printer className="w-4 h-4" />
-              Imprimir PDF
+              <span className="hidden sm:inline">Imprimir PDF</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
           </CardContent>
         </Card>
       </div>
 
       {/* Palavras Cruzadas */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
+        <div className="lg:col-span-2 overflow-x-auto">
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-center text-green-800 flex items-center justify-center gap-2">
-                <Grid3X3 className="w-6 h-6" />
+              <CardTitle className="text-center text-green-800 flex items-center justify-center gap-2 text-base sm:text-xl">
+                <Grid3X3 className="w-5 h-5 sm:w-6 sm:h-6" />
                 Palavras Cruzadas Verdes
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-15 gap-1 max-w-3xl mx-auto" style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}>
+            <CardContent className="p-2 sm:p-4">
+              <div className="grid gap-0.5 sm:gap-1 max-w-full overflow-auto mx-auto" 
+                style={{ 
+                  gridTemplateColumns: `repeat(${gridSize}, minmax(auto, 1fr))`,
+                  width: "fit-content"
+                }}
+              >
                 {Array.from({ length: gridSize }, (_, row) =>
                   Array.from({ length: gridSize }, (_, col) => {
                     const isWord = isWordCell(row, col);
@@ -282,27 +287,36 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
                     });
 
                     return (
-                      <div key={`${row}-${col}`} className="relative">
+                      <div className="relative" key={`${row}-${col}`}>
                         {isWord ? (
-                          <div className="relative">
-                            <Input
-                              value={userInputs[row]?.[col] || ''}
-                              onChange={(e) => handleInputChange(row, col, e.target.value)}
-                              className={`w-8 h-8 text-center text-sm font-bold border-2 p-0 ${
-                                isCompleted 
-                                  ? 'bg-green-100 border-green-400 text-green-800' 
-                                  : 'bg-white border-gray-300'
-                              }`}
-                              maxLength={1}
-                            />
+                          <div className={`
+                            w-6 h-6 sm:w-8 sm:h-8 
+                            border-2 rounded relative 
+                            flex items-center justify-center
+                            ${isCompleted 
+                              ? 'bg-green-500 text-white border-green-600' 
+                              : 'bg-white border-gray-300'
+                            }
+                          `}>
                             {wordNumber && (
-                              <span className="absolute -top-1 -left-1 text-xs font-bold text-green-600 bg-white rounded-full w-4 h-4 flex items-center justify-center border border-green-300">
+                              <span className="absolute top-0 left-0.5 text-[8px] sm:text-[10px] font-bold">
                                 {wordNumber}
                               </span>
                             )}
+                            <Input
+                              className={`
+                                w-5 h-5 sm:w-6 sm:h-6 p-0 border-none text-center uppercase
+                                text-xs sm:text-sm font-bold bg-transparent focus:ring-0
+                                ${isCompleted ? 'text-white' : 'text-green-800'}
+                              `}
+                              value={userInputs[row][col]}
+                              onChange={(e) => handleInputChange(row, col, e.target.value)}
+                              maxLength={1}
+                              disabled={isCompleted}
+                            />
                           </div>
                         ) : (
-                          <div className="w-8 h-8 bg-gray-800"></div>
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-800"></div>
                         )}
                       </div>
                     );
@@ -317,30 +331,27 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
         <div>
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-green-800">Dicas</CardTitle>
+              <CardTitle className="text-green-800 text-base sm:text-xl">Dicas</CardTitle>
               <Progress value={(completedWords.length / words.length) * 100} className="h-2" />
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                <div className="space-y-3">
+            <CardContent className="text-xs sm:text-sm">
+              <div className="space-y-3 sm:space-y-4 max-h-72 sm:max-h-96 overflow-y-auto pr-2">
+                <div className="space-y-2 sm:space-y-3">
                   <h4 className="font-semibold text-green-800">HORIZONTAL:</h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                     {words.filter(w => w.direction === 'horizontal').map((word, index) => (
-                      <div key={index} className={`p-2 rounded ${completedWords.includes(word.word) ? 'bg-green-100 text-green-800' : 'text-green-700'}`}>
-                        <span className="font-semibold">{word.number}.</span> {word.clue}
-                        {completedWords.includes(word.word) && <CheckCircle className="inline w-4 h-4 ml-2 text-green-600" />}
+                      <div key={index} className={`${completedWords.includes(word.word) ? 'text-green-500 line-through' : 'text-green-700'}`}>
+                        <span className="font-bold">{word.number}.</span> {word.clue}
                       </div>
                     ))}
                   </div>
                 </div>
-                
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   <h4 className="font-semibold text-green-800">VERTICAL:</h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                     {words.filter(w => w.direction === 'vertical').map((word, index) => (
-                      <div key={index} className={`p-2 rounded ${completedWords.includes(word.word) ? 'bg-green-100 text-green-800' : 'text-green-700'}`}>
-                        <span className="font-semibold">{word.number}.</span> {word.clue}
-                        {completedWords.includes(word.word) && <CheckCircle className="inline w-4 h-4 ml-2 text-green-600" />}
+                      <div key={index} className={`${completedWords.includes(word.word) ? 'text-green-500 line-through' : 'text-green-700'}`}>
+                        <span className="font-bold">{word.number}.</span> {word.clue}
                       </div>
                     ))}
                   </div>

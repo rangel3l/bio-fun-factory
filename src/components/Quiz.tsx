@@ -194,34 +194,34 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     const percentage = Math.round((finalScore / (questions.length * 10)) * 100);
     
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-2xl mx-auto px-3 sm:px-0">
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-green-800 mb-4">
+            <CardTitle className="text-2xl sm:text-3xl text-green-800 mb-4">
               🎉 Quiz Concluído!
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div className="space-y-4">
-              <div className="text-6xl font-bold text-green-600">{finalScore}</div>
-              <div className="text-xl text-green-700">pontos de {questions.length * 10} possíveis</div>
-              <div className="text-lg text-green-600">{percentage}% de acertos</div>
+          <CardContent className="text-center space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="text-4xl sm:text-6xl font-bold text-green-600">{finalScore}</div>
+              <div className="text-lg sm:text-xl text-green-700">pontos de {questions.length * 10} possíveis</div>
+              <div className="text-base sm:text-lg text-green-600">{percentage}% de acertos</div>
             </div>
             
-            <Progress value={percentage} className="h-4" />
+            <Progress value={percentage} className="h-3 sm:h-4" />
             
-            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-              <h3 className="text-lg font-semibold text-green-800 mb-2">
+            <div className="bg-green-50 p-4 sm:p-6 rounded-lg border border-green-200">
+              <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-2">
                 Palavras-chave descobertas:
               </h3>
               <div className="flex flex-wrap gap-2">
                 {questions.map((q) => (
-                  <Badge key={q.id} variant="secondary" className="bg-green-100 text-green-700">
+                  <Badge key={q.id} variant="secondary" className="bg-green-100 text-green-700 text-xs sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
                     {q.keyword}
                   </Badge>
                 ))}
               </div>
-              <p className="text-sm text-green-600 mt-3">
+              <p className="text-xs sm:text-sm text-green-600 mt-3">
                 Essas palavras estarão nos próximos jogos!
               </p>
             </div>
@@ -238,47 +238,48 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
   return (
     <div className="min-h-screen">
       <div 
-        className={`container mx-auto px-4 py-8 rounded-lg border-2 ${
+        className={`container mx-auto px-3 sm:px-4 py-4 sm:py-8 rounded-lg border-2 ${
           timeLeft <= 5 ? 'animate-warning-flash border-red-500' : 'border-transparent'
         }`}
       >
         {/* Header com progresso */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <Badge variant="outline" className="text-lg px-4 py-2">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-wrap justify-between items-center mb-3 sm:mb-4 gap-2">
+            <Badge variant="outline" className="text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
               Questão {currentQuestion + 1} de {questions.length}
             </Badge>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <Button 
                 variant="outline" 
                 onClick={handlePrintPDF}
-                className="flex items-center gap-2"
+                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2"
               >
-                <Printer className="w-4 h-4" />
-                Imprimir PDF
+                <Printer className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Imprimir PDF</span>
+                <span className="sm:hidden">PDF</span>
               </Button>
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-green-600" />
-                <span className={`text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-600'}`}>
+              <div className="flex items-center gap-1 sm:gap-2">
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+                <span className={`text-sm sm:text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-600'}`}>
                   {timeLeft}s
                 </span>
               </div>
-              <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
+              <Badge className="bg-green-100 text-green-700 text-sm sm:text-lg px-2 sm:px-4 py-1 sm:py-2">
                 {score} pontos
               </Badge>
             </div>
           </div>
-          <Progress value={((currentQuestion + 1) / questions.length) * 100} className="h-3" />
+          <Progress value={((currentQuestion + 1) / questions.length) * 100} className="h-2 sm:h-3" />
         </div>
 
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-2xl text-green-800 leading-relaxed">
+            <CardTitle className="text-xl sm:text-2xl text-green-800 leading-relaxed">
               {question.question}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid gap-4">
+          <CardContent className="space-y-4 sm:space-y-6">
+            <div className="grid gap-3 sm:gap-4">
               {question.options.map((option, index) => (
                 <Button
                   key={index}
@@ -293,7 +294,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
                       ? "secondary"
                       : "outline"
                   }
-                  className={`text-left p-6 h-auto text-wrap justify-start transition-all duration-300 ${
+                  className={`text-left p-3 sm:p-6 h-auto text-wrap justify-start transition-all duration-300 text-sm sm:text-base ${
                     showExplanation
                       ? index === question.correct
                         ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
@@ -305,16 +306,16 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
                   onClick={() => !showExplanation && handleAnswer(index)}
                   disabled={showExplanation}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg font-bold min-w-[2rem]">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-base sm:text-lg font-bold min-w-[1.5rem] sm:min-w-[2rem]">
                       {String.fromCharCode(65 + index)})
                     </span>
-                    <span className="text-lg">{option}</span>
+                    <span className="text-sm sm:text-lg">{option}</span>
                     {showExplanation && index === question.correct && (
-                      <CheckCircle className="w-6 h-6 ml-auto" />
+                      <CheckCircle className="w-5 h-5 ml-auto text-white" />
                     )}
                     {showExplanation && index === selectedAnswer && index !== question.correct && (
-                      <XCircle className="w-6 h-6 ml-auto" />
+                      <XCircle className="w-5 h-5 ml-auto text-white" />
                     )}
                   </div>
                 </Button>
@@ -322,22 +323,21 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
             </div>
 
             {showExplanation && (
-              <div className="mt-6 p-6 bg-green-50 rounded-lg border border-green-200 animate-fade-in">
-                <div className="flex items-start gap-3">
-                  <Lightbulb className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h4 className="font-semibold text-green-800 mb-2">Explicação:</h4>
-                    <p className="text-green-700 leading-relaxed">{question.explanation}</p>
-                    <div className="mt-3">
-                      <Badge className="bg-green-100 text-green-700">
-                        Palavra-chave: {question.keyword}
-                      </Badge>
+              <div className="mt-4 sm:mt-6">
+                <div className="bg-green-50 p-3 sm:p-5 rounded-lg border border-green-200">
+                  <div className="flex items-start gap-3">
+                    <Lightbulb className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500 mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-semibold text-green-800 text-sm sm:text-base mb-1">Explicação:</h4>
+                      <p className="text-green-700 text-xs sm:text-sm">{question.explanation}</p>
                     </div>
                   </div>
                 </div>
                 <Button 
+                  variant="default" 
+                  size="lg" 
                   onClick={nextQuestion}
-                  className="mt-4 bg-green-500 hover:bg-green-600"
+                  className="mt-4 bg-green-500 hover:bg-green-600 w-full sm:w-auto"
                 >
                   {currentQuestion < questions.length - 1 ? 'Próxima Questão' : 'Finalizar Quiz'} →
                 </Button>

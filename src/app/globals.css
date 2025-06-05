@@ -14,3 +14,6 @@
 .warning-flash {
   animation: warning-flash 1s infinite;
 }
+
+/* Add this import at the end of your globals.css file */
+@import '../styles/mobile-fixes.css';

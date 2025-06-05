@@ -173,6 +173,23 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
     }
   };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (element) {
+      const cellCoords = element.getAttribute('data-cell');
+      if (cellCoords) {
+        const [row, col] = cellCoords.split('-').map(Number);
+        handleCellMouseEnter(row, col);
+      }
+    }
+    
+    // Prevent scrolling while dragging
+    e.preventDefault();
+  };
+  
   const updateCellSelection = (cells: { row: number; col: number }[]) => {
     setGrid(prevGrid => {
       const newGrid = prevGrid.map(row => 
@@ -244,33 +261,33 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
   if (isCompleted) {
     const finalScore = score + Math.floor(timeLeft / 10);
     const percentage = Math.round((foundWords.length / words.length) * 100);
-
+    
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-2xl mx-auto px-3 sm:px-0">
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl text-green-800 mb-4">
-              🎯 Caça-Palavras Concluído!
+            <CardTitle className="text-2xl sm:text-3xl text-green-800 mb-4">
+              🔍 Caça-Palavras Concluído!
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center space-y-6">
-            <div className="space-y-4">
-              <div className="text-6xl font-bold text-green-600">{finalScore}</div>
-              <div className="text-xl text-green-700">pontos totais</div>
-              <div className="text-lg text-green-600">
+          <CardContent className="text-center space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="text-4xl sm:text-6xl font-bold text-green-600">{finalScore}</div>
+              <div className="text-lg sm:text-xl text-green-700">pontos totais</div>
+              <div className="text-base sm:text-lg text-green-600">
                 {foundWords.length} de {words.length} palavras encontradas ({percentage}%)
               </div>
             </div>
             
-            <Progress value={percentage} className="h-4" />
+            <Progress value={percentage} className="h-3 sm:h-4" />
             
-            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-              <h3 className="text-lg font-semibold text-green-800 mb-4">
+            <div className="bg-green-50 p-4 sm:p-6 rounded-lg border border-green-200">
+              <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-4">
                 Palavras encontradas:
               </h3>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {foundWords.map((fw, index) => (
-                  <Badge key={index} className="bg-green-100 text-green-700">
+                  <Badge key={index} className="bg-green-100 text-green-700 text-xs sm:text-base">
                     ✓ {fw.word}
                   </Badge>
                 ))}
@@ -283,67 +300,61 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto px-2 sm:px-0">
       {/* Header */}
-      <div className="grid md:grid-cols-4 gap-6 mb-8">
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Clock className="w-6 h-6 text-green-600" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-6 mb-6 sm:mb-8">
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm col-span-1 sm:col-span-2 md:col-span-1">
+          <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+            <Clock className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-800">{formatTime(timeLeft)}</div>
-              <div className="text-sm text-green-600">Tempo restante</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-800">{formatTime(timeLeft)}</div>
+              <div className="text-xs sm:text-sm text-green-600">Tempo restante</div>
             </div>
           </CardContent>
         </Card>
 
         <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Target className="w-6 h-6 text-green-600" />
+          <CardContent className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4">
+            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-green-600" />
             <div>
-              <div className="text-2xl font-bold text-green-800">{score}</div>
-              <div className="text-sm text-green-600">Pontos</div>
+              <div className="text-lg sm:text-2xl font-bold text-green-800">{score}</div>
+              <div className="text-xs sm:text-sm text-green-600">Pontos</div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center gap-3 p-4">
-            <Search className="w-6 h-6 text-green-600" />
-            <div>
-              <div className="text-2xl font-bold text-green-800">{foundWords.length}/{words.length}</div>
-              <div className="text-sm text-green-600">Palavras encontradas</div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-          <CardContent className="flex items-center justify-center p-4">
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm col-span-2 sm:col-span-1">
+          <CardContent className="flex items-center justify-center p-3 sm:p-4">
             <Button 
               variant="outline" 
               onClick={handlePrintPDF}
-              className="flex items-center gap-2 w-full"
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full"
             >
               <Printer className="w-4 h-4" />
-              Imprimir PDF
+              <span className="hidden sm:inline">Imprimir PDF</span>
+              <span className="sm:hidden">PDF</span>
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Grid do caça-palavras */}
+      {/* Game Grid */}
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
         <div className="lg:col-span-2">
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-center text-green-800 flex items-center justify-center gap-2">
-                <Search className="w-6 h-6" />
+              <CardTitle className="text-center text-green-800 flex items-center justify-center gap-2 text-base sm:text-xl">
+                <Search className="w-5 h-5 sm:w-6 sm:h-6" />
                 Caça-Palavras Ecológico
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div 
-                className="grid gap-1 p-4 bg-green-50 rounded-lg select-none"
-                style={{ gridTemplateColumns: `repeat(${gridSize}, 1fr)` }}
+                className="grid gap-0.5 sm:gap-1 p-2 sm:p-4 bg-green-50 rounded-lg select-none mx-auto"
+                style={{ 
+                  gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+                  width: "fit-content" 
+                }}
                 onMouseLeave={() => {
                   if (isDragging) {
                     handleMouseUp();
@@ -351,26 +362,35 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
                 }}
               >
                 {grid.map((row, rowIndex) =>
-                  row.map((cell, colIndex) => (
-                    <div
-                      key={`${rowIndex}-${colIndex}`}
-                      className={`
-                        w-8 h-8 flex items-center justify-center text-sm font-bold cursor-pointer
-                        border-2 rounded transition-all duration-200 hover:scale-110
-                        ${cell.isFound 
-                          ? 'bg-green-500 text-white border-green-600' 
-                          : cell.isSelected 
-                          ? 'bg-blue-300 border-blue-500' 
-                          : 'bg-white border-gray-300 hover:border-green-400'
-                        }
-                      `}
-                      onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
-                      onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
-                      onMouseUp={handleMouseUp}
-                    >
-                      {cell.letter}
-                    </div>
-                  ))
+                  row.map((cell, colIndex) => {
+                    // Calculate size based on available space
+                    const baseSize = 'w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8';
+                    
+                    return (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        className={`
+                          ${baseSize} flex items-center justify-center text-xs sm:text-sm font-bold cursor-pointer
+                          border-2 rounded transition-all duration-200 hover:scale-110
+                          ${cell.isFound 
+                            ? 'bg-green-500 text-white border-green-600' 
+                            : cell.isSelected 
+                            ? 'bg-blue-300 border-blue-500' 
+                            : 'bg-white border-gray-300 hover:border-green-400'
+                          }
+                        `}
+                        onMouseDown={() => handleCellMouseDown(rowIndex, colIndex)}
+                        onMouseEnter={() => handleCellMouseEnter(rowIndex, colIndex)}
+                        onMouseUp={handleMouseUp}
+                        onTouchStart={() => handleCellMouseDown(rowIndex, colIndex)}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleMouseUp}
+                        data-cell={`${rowIndex}-${colIndex}`}
+                      >
+                        {cell.letter}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </CardContent>
@@ -381,38 +401,36 @@ const WordSearch: React.FC<{ onComplete: (score: number) => void }> = ({ onCompl
         <div>
           <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-green-800">Palavras para encontrar</CardTitle>
+              <CardTitle className="text-green-800 text-base sm:text-xl">Palavras para encontrar</CardTitle>
               <Progress value={(foundWords.length / words.length) * 100} className="h-2" />
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
+              <div className="grid grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-1 sm:gap-2">
                 {words.map((word, index) => {
                   const isFound = foundWords.some(fw => fw.word === word);
                   return (
-                    <div
+                    <Badge 
                       key={index}
-                      className={`flex items-center justify-between p-3 rounded-lg transition-all ${
+                      variant="outline"
+                      className={`text-xs sm:text-sm px-2 py-1 ${
                         isFound 
-                          ? 'bg-green-100 text-green-800 border-l-4 border-green-500' 
-                          : 'bg-gray-50 text-gray-700'
+                          ? 'bg-green-100 text-green-700 border-green-300 line-through'
+                          : 'bg-white border-gray-200'
                       }`}
                     >
-                      <span className={`font-medium ${isFound ? 'line-through' : ''}`}>
-                        {word}
-                      </span>
-                      {isFound && <CheckCircle className="w-5 h-5 text-green-600" />}
-                    </div>
+                      {isFound ? '✓ ' : ''}{word}
+                    </Badge>
                   );
                 })}
               </div>
             </CardContent>
           </Card>
-
-          <Card className="border-green-200 bg-white/80 backdrop-blur-sm mt-6">
+          
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm mt-4">
             <CardHeader>
-              <CardTitle className="text-green-800 text-lg">Como jogar</CardTitle>
+              <CardTitle className="text-green-800 text-base sm:text-xl">Como Jogar</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-green-700 space-y-2">
+            <CardContent className="text-xs sm:text-sm text-green-700 space-y-1">
               <p>• Clique e arraste para selecionar palavras</p>
               <p>• As palavras podem estar em qualquer direção</p>
               <p>• Cada letra vale 10 pontos</p>

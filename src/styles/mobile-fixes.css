@@ -1,0 +1,58 @@
+/* Mobile specific fixes */
+
+/* Prevent text scaling in landscape orientation */
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 640px) {
+  button, 
+  [role="button"],
+  a,
+  input,
+  select {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Make sure elements don't overflow the viewport */
+  .container {
+    max-width: 100% !important;
+    overflow-x: hidden;
+  }
+  
+  /* Adjust card padding for small screens */
+  .card {
+    padding: 0.75rem !important;
+  }
+  
+  /* Prevent touch input issues with games */
+  [data-cell] {
+    touch-action: none;
+  }
+  
+  /* Adjust the input font-size to prevent zoom on iOS */
+  input {
+    font-size: 16px !important;
+  }
+}
+
+/* Prevent pinch zoom on game components */
+.prevent-zoom {
+  touch-action: pan-x pan-y;
+}
+
+/* Fix for sticky hover states on mobile */
+@media (hover: none) {
+  button:hover,
+  [role="button"]:hover {
+    background-color: initial !important;
+    transform: none !important;
+  }
+}
+
+/* Improve scrolling performance */
+* {
+  -webkit-overflow-scrolling: touch;
+}
