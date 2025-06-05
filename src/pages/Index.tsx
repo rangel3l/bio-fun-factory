@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import Quiz from '../components/Quiz';
 import WordSearch from '../components/WordSearch';
 import Crossword from '../components/Crossword';
 import { Leaf, Brain, Target, Trophy, BookOpen, Users } from 'lucide-react';
+import Image from 'next/image';
 
 const Index = () => {
   const [activeGame, setActiveGame] = useState<'home' | 'quiz' | 'wordsearch' | 'crossword'>('home');
@@ -56,7 +56,7 @@ const Index = () => {
 
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100">
-        <div className="container mx-auto px-4 py-8">
+        <div className={`container mx-auto px-4 py-8 transition-all duration-300`}>
           <div className="mb-6 flex items-center justify-between">
             <Button 
               variant="outline" 
@@ -165,7 +165,7 @@ const Index = () => {
               key={game.id} 
               className="group hover:shadow-xl transition-all duration-300 cursor-pointer border-green-200 bg-white/60 backdrop-blur-sm hover:scale-105 animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => setActiveGame(game.id as any)}
+              onClick={() => setActiveGame(game.id as 'quiz' | 'wordsearch' | 'crossword')}
             >
               <CardHeader className="text-center pb-4">
                 <div className={`w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center ${game.color} group-hover:scale-110 transition-transform duration-300`}>
@@ -202,12 +202,24 @@ const Index = () => {
               Sobre Este Projeto
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-center">
+          <CardContent className="text-center space-y-6">
             <p className="text-green-700 text-lg max-w-2xl mx-auto">
               Este material didático interativo foi desenvolvido como atividade de extensão 
               para tornar o aprendizado de biologia mais envolvente e acessível. 
               Ideal para visitas escolares e atividades educativas sobre sustentabilidade!
             </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+              <div className="flex items-center">
+                <img 
+                  src="/logoRangel.png"
+                  alt="Logo Rangel"
+                  width={16}
+                  height={16}
+                  className="mr-2"
+                />
+                <span>Desenvolvido por Rangel Gomes | Design por Laissa Pinho e Davi Ivad</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </main>

@@ -1,0 +1,16 @@
+/* We're using Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ...existing code... */
+
+@keyframes warning-flash {
+  0% { background-color: transparent; }
+  50% { background-color: rgba(239, 68, 68, 0.2); }
+  100% { background-color: transparent; }
+}
+
+.warning-flash {
+  animation: warning-flash 1s infinite;
+}

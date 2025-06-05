@@ -1,8 +1,33 @@
-
 import jsPDF from 'jspdf';
 
-export const generateQuizPDF = (questions: any[]) => {
+interface QuizQuestion {
+  id?: number;
+  question: string;
+  options: string[];
+  correct: number;
+  explanation: string;
+  keyword?: string;
+}
+
+interface GridCell {
+  letter: string;
+  isPartOfWord?: boolean;
+  isSelected?: boolean;
+  isFound?: boolean;
+}
+
+const addVintageBackground = (doc: jsPDF) => {
+  const pageWidth = doc.internal.pageSize.width;
+  const pageHeight = doc.internal.pageSize.height;
+  
+  // Fundo base em bege claro
+  doc.setFillColor(245, 241, 231);
+  doc.rect(0, 0, pageWidth, pageHeight, 'F');
+};
+
+export const generateQuizPDF = (questions: QuizQuestion[]) => {
   const doc = new jsPDF();
+  addVintageBackground(doc);
   const pageHeight = doc.internal.pageSize.height;
   let yPosition = 20;
 
@@ -19,6 +44,7 @@ export const generateQuizPDF = (questions: any[]) => {
     // Verificar se precisa de nova página
     if (yPosition > pageHeight - 40) {
       doc.addPage();
+      addVintageBackground(doc);
       yPosition = 20;
     }
 
@@ -39,6 +65,7 @@ export const generateQuizPDF = (questions: any[]) => {
 
   // Página de respostas
   doc.addPage();
+  addVintageBackground(doc);
   doc.setFontSize(16);
   doc.text('GABARITO', 20, 20);
   yPosition = 40;
@@ -46,6 +73,7 @@ export const generateQuizPDF = (questions: any[]) => {
   questions.forEach((question, index) => {
     if (yPosition > pageHeight - 20) {
       doc.addPage();
+      addVintageBackground(doc);
       yPosition = 20;
     }
 
@@ -65,8 +93,9 @@ export const generateQuizPDF = (questions: any[]) => {
   doc.save('quiz-sustentabilidade.pdf');
 };
 
-export const generateWordSearchPDF = (grid: any[][], words: string[]) => {
+export const generateWordSearchPDF = (grid: GridCell[][], words: string[]) => {
   const doc = new jsPDF();
+  addVintageBackground(doc);
   
   // Título
   doc.setFontSize(20);
@@ -113,8 +142,8 @@ export const generateWordSearchPDF = (grid: any[][], words: string[]) => {
 };
 
 export const generateCrosswordPDF = () => {
-  // Criar PDF em orientação horizontal
   const doc = new jsPDF('landscape');
+  addVintageBackground(doc);
   
   // Título
   doc.setFontSize(20);
@@ -186,19 +215,20 @@ export const generateCrosswordPDF = () => {
   
   // Dicas posicionadas no topo da página (mesma linha do nome em x)
   const cluesStartX = gridStartX + (gridSize * cellSize) + 20;
-  const cluesStartY = 20; // Mesma altura do título
+  const cluesStartY = 20;
   const pageWidth = doc.internal.pageSize.width;
   const pageHeight = doc.internal.pageSize.height;
+  const lineSpacing = 5; // Reduzido para aproximadamente 0.5cm
   
   doc.setFontSize(14);
   doc.text('DICAS', cluesStartX, cluesStartY);
   
-  let currentY = cluesStartY + 20;
+  let currentY = cluesStartY + 10; // Reduzido o espaço inicial
   
   // Dicas horizontais
-  doc.setFontSize(12);
+  doc.setFontSize(10); // Reduzido o tamanho da fonte
   doc.text('HORIZONTAL:', cluesStartX, currentY);
-  currentY += 10;
+  currentY += lineSpacing;
   
   const horizontalClues = [
     '1. Desenvolvimento que atende às necessidades presentes',
@@ -211,28 +241,25 @@ export const generateCrosswordPDF = () => {
   ];
   
   horizontalClues.forEach((clue, index) => {
-    // Verificar se precisa quebrar a página
-    if (currentY > pageHeight - 30) {
+    const lines = doc.splitTextToSize(clue, pageWidth - cluesStartX - 20);
+    
+    if (currentY + (lines.length * lineSpacing) > pageHeight - 30) {
       doc.addPage();
+      addVintageBackground(doc);
       currentY = 20;
     }
     
     doc.setFontSize(9);
-    doc.text(clue, cluesStartX, currentY);
-    currentY += 10;
+    doc.text(lines, cluesStartX, currentY);
+    currentY += lines.length * lineSpacing; // Ajustado para considerar o número de linhas
   });
   
-  currentY += 10; // Espaço entre seções
+  currentY += lineSpacing;
   
   // Dicas verticais
-  doc.setFontSize(12);
-  // Verificar se precisa quebrar a página
-  if (currentY > pageHeight - 30) {
-    doc.addPage();
-    currentY = 20;
-  }
+  doc.setFontSize(10); // Reduzido o tamanho da fonte
   doc.text('VERTICAL:', cluesStartX, currentY);
-  currentY += 10;
+  currentY += lineSpacing;
   
   const verticalClues = [
     '2. Processo de transformação de resíduos',
@@ -245,15 +272,17 @@ export const generateCrosswordPDF = () => {
   ];
   
   verticalClues.forEach((clue, index) => {
-    // Verificar se precisa quebrar a página
-    if (currentY > pageHeight - 30) {
+    const lines = doc.splitTextToSize(clue, pageWidth - cluesStartX - 20);
+    
+    if (currentY + (lines.length * lineSpacing) > pageHeight - 30) {
       doc.addPage();
+      addVintageBackground(doc);
       currentY = 20;
     }
     
     doc.setFontSize(9);
-    doc.text(clue, cluesStartX, currentY);
-    currentY += 10;
+    doc.text(lines, cluesStartX, currentY);
+    currentY += lines.length * lineSpacing; // Ajustado para considerar o número de linhas
   });
 
   // Adicionar créditos

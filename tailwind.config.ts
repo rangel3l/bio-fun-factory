@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import animate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -84,13 +85,24 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'warning-flash': {
+					'0%, 100%': { 
+              outline: '0px solid rgba(239, 68, 68, 0)',
+              borderColor: 'rgba(239, 68, 68, 0.3)'
+            },
+            '50%': { 
+              outline: '4px solid rgba(239, 68, 68, 0.5)',
+              borderColor: 'rgba(239, 68, 68, 1)'
+            }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'warning-flash': 'warning-flash 0.5s ease-in-out infinite'
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [animate],
 } satisfies Config;

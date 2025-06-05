@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -150,23 +150,28 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [isCompleted, setIsCompleted] = useState(false);
 
-  React.useEffect(() => {
-    if (timeLeft > 0 && !showExplanation && !isCompleted) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !showExplanation) {
-      handleAnswer(-1); // Tempo esgotado
-    }
-  }, [timeLeft, showExplanation, isCompleted]);
-
-  const handleAnswer = (answerIndex: number) => {
+  const handleAnswer = useCallback((answerIndex: number) => {
     setSelectedAnswer(answerIndex);
     setShowExplanation(true);
     
     if (answerIndex === questions[currentQuestion].correct) {
-      setScore(score + 10);
+      setScore(score => score + 10);
     }
-  };
+  }, [currentQuestion]);
+
+  useEffect(() => {
+    if (timeLeft > 0 && !showExplanation && !isCompleted) {
+      const timer = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+        if (timeLeft <= 5) {
+          console.log('Warning: Less than 5 seconds remaining!', timeLeft);
+        }
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0 && !showExplanation) {
+      handleAnswer(-1); // Tempo esgotado
+    }
+  }, [timeLeft, showExplanation, isCompleted, handleAnswer]);
 
   const handlePrintPDF = () => {
     generateQuizPDF(questions);
@@ -231,110 +236,116 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
   const isIncorrect = selectedAnswer !== null && selectedAnswer !== question.correct;
 
   return (
-    <div className="max-w-4xl mx-auto">
-      {/* Header com progresso */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <Badge variant="outline" className="text-lg px-4 py-2">
-            Questão {currentQuestion + 1} de {questions.length}
-          </Badge>
-          <div className="flex items-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={handlePrintPDF}
-              className="flex items-center gap-2"
-            >
-              <Printer className="w-4 h-4" />
-              Imprimir PDF
-            </Button>
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-green-600" />
-              <span className={`text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-600'}`}>
-                {timeLeft}s
-              </span>
-            </div>
-            <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
-              {score} pontos
+    <div className="min-h-screen">
+      <div 
+        className={`container mx-auto px-4 py-8 rounded-lg border-2 ${
+          timeLeft <= 5 ? 'animate-warning-flash border-red-500' : 'border-transparent'
+        }`}
+      >
+        {/* Header com progresso */}
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <Badge variant="outline" className="text-lg px-4 py-2">
+              Questão {currentQuestion + 1} de {questions.length}
             </Badge>
-          </div>
-        </div>
-        <Progress value={((currentQuestion + 1) / questions.length) * 100} className="h-3" />
-      </div>
-
-      <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle className="text-2xl text-green-800 leading-relaxed">
-            {question.question}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid gap-4">
-            {question.options.map((option, index) => (
-              <Button
-                key={index}
-                variant={
-                  showExplanation
-                    ? index === question.correct
-                      ? "default"
-                      : index === selectedAnswer && index !== question.correct
-                      ? "destructive"
-                      : "outline"
-                    : selectedAnswer === index
-                    ? "secondary"
-                    : "outline"
-                }
-                className={`text-left p-6 h-auto text-wrap justify-start transition-all duration-300 ${
-                  showExplanation
-                    ? index === question.correct
-                      ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
-                      : index === selectedAnswer && index !== question.correct
-                      ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
-                      : "opacity-50"
-                    : "hover:scale-105 hover:border-green-300"
-                }`}
-                onClick={() => !showExplanation && handleAnswer(index)}
-                disabled={showExplanation}
+            <div className="flex items-center gap-4">
+              <Button 
+                variant="outline" 
+                onClick={handlePrintPDF}
+                className="flex items-center gap-2"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg font-bold min-w-[2rem]">
-                    {String.fromCharCode(65 + index)})
-                  </span>
-                  <span className="text-lg">{option}</span>
-                  {showExplanation && index === question.correct && (
-                    <CheckCircle className="w-6 h-6 ml-auto" />
-                  )}
-                  {showExplanation && index === selectedAnswer && index !== question.correct && (
-                    <XCircle className="w-6 h-6 ml-auto" />
-                  )}
-                </div>
+                <Printer className="w-4 h-4" />
+                Imprimir PDF
               </Button>
-            ))}
+              <div className="flex items-center gap-2">
+                <Clock className="w-5 h-5 text-green-600" />
+                <span className={`text-lg font-bold ${timeLeft <= 10 ? 'text-red-500' : 'text-green-600'}`}>
+                  {timeLeft}s
+                </span>
+              </div>
+              <Badge className="bg-green-100 text-green-700 text-lg px-4 py-2">
+                {score} pontos
+              </Badge>
+            </div>
           </div>
+          <Progress value={((currentQuestion + 1) / questions.length) * 100} className="h-3" />
+        </div>
 
-          {showExplanation && (
-            <div className="mt-6 p-6 bg-green-50 rounded-lg border border-green-200 animate-fade-in">
-              <div className="flex items-start gap-3">
-                <Lightbulb className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-green-800 mb-2">Explicação:</h4>
-                  <p className="text-green-700 leading-relaxed">{question.explanation}</p>
-                  <div className="mt-3">
-                    <Badge className="bg-green-100 text-green-700">
-                      Palavra-chave: {question.keyword}
-                    </Badge>
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="text-2xl text-green-800 leading-relaxed">
+              {question.question}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid gap-4">
+              {question.options.map((option, index) => (
+                <Button
+                  key={index}
+                  variant={
+                    showExplanation
+                      ? index === question.correct
+                        ? "default"
+                        : index === selectedAnswer && index !== question.correct
+                        ? "destructive"
+                        : "outline"
+                      : selectedAnswer === index
+                      ? "secondary"
+                      : "outline"
+                  }
+                  className={`text-left p-6 h-auto text-wrap justify-start transition-all duration-300 ${
+                    showExplanation
+                      ? index === question.correct
+                        ? "bg-green-500 hover:bg-green-600 text-white border-green-500"
+                        : index === selectedAnswer && index !== question.correct
+                        ? "bg-red-500 hover:bg-red-600 text-white border-red-500"
+                        : "opacity-50"
+                      : "hover:scale-105 hover:border-green-300"
+                  }`}
+                  onClick={() => !showExplanation && handleAnswer(index)}
+                  disabled={showExplanation}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg font-bold min-w-[2rem]">
+                      {String.fromCharCode(65 + index)})
+                    </span>
+                    <span className="text-lg">{option}</span>
+                    {showExplanation && index === question.correct && (
+                      <CheckCircle className="w-6 h-6 ml-auto" />
+                    )}
+                    {showExplanation && index === selectedAnswer && index !== question.correct && (
+                      <XCircle className="w-6 h-6 ml-auto" />
+                    )}
+                  </div>
+                </Button>
+              ))}
+            </div>
+
+            {showExplanation && (
+              <div className="mt-6 p-6 bg-green-50 rounded-lg border border-green-200 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <Lightbulb className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+                  <div>
+                    <h4 className="font-semibold text-green-800 mb-2">Explicação:</h4>
+                    <p className="text-green-700 leading-relaxed">{question.explanation}</p>
+                    <div className="mt-3">
+                      <Badge className="bg-green-100 text-green-700">
+                        Palavra-chave: {question.keyword}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
+                <Button 
+                  onClick={nextQuestion}
+                  className="mt-4 bg-green-500 hover:bg-green-600"
+                >
+                  {currentQuestion < questions.length - 1 ? 'Próxima Questão' : 'Finalizar Quiz'} →
+                </Button>
               </div>
-              <Button 
-                onClick={nextQuestion}
-                className="mt-4 bg-green-500 hover:bg-green-600"
-              >
-                {currentQuestion < questions.length - 1 ? 'Próxima Questão' : 'Finalizar Quiz'} →
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
