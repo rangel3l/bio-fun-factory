@@ -28,6 +28,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   const [completedWords, setCompletedWords] = useState<string[]>([]);
   const [grid, setGrid] = useState<string[][]>([]);
   const [userInputs, setUserInputs] = useState<string[][]>([]);
+  const [isGridInitialized, setIsGridInitialized] = useState(false);
 
   const words: WordDefinition[] = [
     { word: 'SUSTENTABILIDADE', clue: 'Desenvolvimento que atende às necessidades presentes sem comprometer o futuro', startRow: 2, startCol: 1, direction: 'horizontal', number: 1 },
@@ -80,6 +81,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
 
     setGrid(newGrid);
     setUserInputs(newUserInputs);
+    setIsGridInitialized(true);
   };
 
   const handleInputChange = (row: number, col: number, value: string) => {
@@ -138,6 +140,9 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   };
 
   const isWordCell = (row: number, col: number) => {
+    if (!isGridInitialized || !grid[row] || row >= gridSize || col >= gridSize) {
+      return false;
+    }
     return grid[row][col] !== '';
   };
 
@@ -145,6 +150,19 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
     const word = words.find(w => w.startRow === row && w.startCol === col);
     return word?.number || '';
   };
+
+  // Don't render the grid until it's initialized
+  if (!isGridInitialized) {
+    return (
+      <div className="max-w-6xl mx-auto">
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
+          <CardContent className="flex items-center justify-center p-8">
+            <div className="text-green-600">Carregando palavras cruzadas...</div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (isCompleted) {
     const finalScore = score + Math.floor(timeLeft / 15);
@@ -268,7 +286,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
                         {isWord ? (
                           <div className="relative">
                             <Input
-                              value={userInputs[row][col] || ''}
+                              value={userInputs[row]?.[col] || ''}
                               onChange={(e) => handleInputChange(row, col, e.target.value)}
                               className={`w-8 h-8 text-center text-sm font-bold border-2 p-0 ${
                                 isCompleted 
