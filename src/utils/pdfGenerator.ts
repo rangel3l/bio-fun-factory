@@ -113,7 +113,8 @@ export const generateWordSearchPDF = (grid: any[][], words: string[]) => {
 };
 
 export const generateCrosswordPDF = () => {
-  const doc = new jsPDF();
+  // Criar PDF em orientação horizontal
+  const doc = new jsPDF('landscape');
   
   // Título
   doc.setFontSize(20);
@@ -125,9 +126,10 @@ export const generateCrosswordPDF = () => {
   // Instruções
   doc.text('Complete as palavras cruzadas com termos relacionados à sustentabilidade:', 20, 50);
   
-  // Grid das palavras cruzadas
+  // Grid das palavras cruzadas - ajustado para orientação horizontal
   const gridStartY = 70;
-  const cellSize = 10; // Reduzido para caber melhor
+  const gridStartX = 20; // Começar mais à esquerda
+  const cellSize = 12; // Aumentar um pouco o tamanho das células
   const gridSize = 15;
   
   // Definir as palavras e suas posições (mesmas do componente)
@@ -163,8 +165,7 @@ export const generateCrosswordPDF = () => {
     }
   });
 
-  // Desenhar o grid centralizado
-  const gridStartX = 60; // Centralizar melhor
+  // Desenhar o grid
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const x = gridStartX + col * cellSize;
@@ -176,21 +177,23 @@ export const generateCrosswordPDF = () => {
         // Adicionar números das palavras que começam nesta célula
         const wordStart = words.find(w => w.startRow === row && w.startCol === col);
         if (wordStart) {
-          doc.setFontSize(7);
-          doc.text(wordStart.number.toString(), x + 1, y + 6);
+          doc.setFontSize(8);
+          doc.text(wordStart.number.toString(), x + 1, y + 7);
         }
       }
     }
   }
   
-  // Dicas em duas colunas para economizar espaço
-  const cluesStartY = gridStartY + (gridSize * cellSize) + 15;
-  doc.setFontSize(12);
-  doc.text('DICAS:', 20, cluesStartY);
+  // Dicas lado a lado - aproveitando o espaço horizontal
+  const cluesStartX = gridStartX + (gridSize * cellSize) + 20; // Posicionar à direita do grid
+  const cluesStartY = gridStartY;
   
-  // Dicas horizontais (coluna esquerda)
-  doc.setFontSize(10);
-  doc.text('HORIZONTAL:', 20, cluesStartY + 15);
+  doc.setFontSize(14);
+  doc.text('DICAS', cluesStartX, cluesStartY);
+  
+  // Dicas horizontais
+  doc.setFontSize(12);
+  doc.text('HORIZONTAL:', cluesStartX, cluesStartY + 20);
   
   const horizontalClues = [
     '1. Desenvolvimento que atende às necessidades presentes',
@@ -203,13 +206,13 @@ export const generateCrosswordPDF = () => {
   ];
   
   horizontalClues.forEach((clue, index) => {
-    doc.setFontSize(8);
-    doc.text(clue, 25, cluesStartY + 25 + (index * 8));
+    doc.setFontSize(9);
+    doc.text(clue, cluesStartX, cluesStartY + 30 + (index * 10));
   });
   
-  // Dicas verticais (coluna direita)
-  doc.setFontSize(10);
-  doc.text('VERTICAL:', 110, cluesStartY + 15);
+  // Dicas verticais
+  doc.setFontSize(12);
+  doc.text('VERTICAL:', cluesStartX, cluesStartY + 110);
   
   const verticalClues = [
     '2. Processo de transformação de resíduos',
@@ -222,8 +225,8 @@ export const generateCrosswordPDF = () => {
   ];
   
   verticalClues.forEach((clue, index) => {
-    doc.setFontSize(8);
-    doc.text(clue, 115, cluesStartY + 25 + (index * 8));
+    doc.setFontSize(9);
+    doc.text(clue, cluesStartX, cluesStartY + 120 + (index * 10));
   });
 
   // Adicionar créditos
