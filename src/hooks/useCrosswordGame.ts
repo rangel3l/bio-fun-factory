@@ -1,0 +1,155 @@
+
+import { useState, useEffect } from 'react';
+import { words, gridSize } from '../data/crosswordWords';
+
+export const useCrosswordGame = (onComplete: (score: number) => void) => {
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(900); // 15 minutos
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [completedWords, setCompletedWords] = useState<string[]>([]);
+  const [grid, setGrid] = useState<string[][]>([]);
+  const [userInputs, setUserInputs] = useState<string[][]>([]);
+  const [isGridInitialized, setIsGridInitialized] = useState(false);
+
+  useEffect(() => {
+    initializeGrid();
+  }, []);
+
+  useEffect(() => {
+    if (timeLeft > 0 && !isCompleted) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0) {
+      setIsCompleted(true);
+      onComplete(score);
+    }
+  }, [timeLeft, isCompleted, score, onComplete]);
+
+  const initializeGrid = () => {
+    const newGrid: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+    const newUserInputs: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+
+    // Preencher o grid com as palavras
+    words.forEach(wordDef => {
+      const { word, startRow, startCol, direction } = wordDef;
+      for (let i = 0; i < word.length; i++) {
+        const row = direction === 'horizontal' ? startRow : startRow + i;
+        const col = direction === 'horizontal' ? startCol + i : startCol;
+        if (row < gridSize && col < gridSize) {
+          newGrid[row][col] = word[i];
+        }
+      }
+    });
+
+    setGrid(newGrid);
+    setUserInputs(newUserInputs);
+    setIsGridInitialized(true);
+  };
+
+  const handleInputChange = (row: number, col: number, value: string) => {
+    if (value.length > 1) return;
+    
+    const newInputs = [...userInputs];
+    newInputs[row][col] = value.toUpperCase();
+    setUserInputs(newInputs);
+    
+    checkCompletedWords(newInputs);
+  };
+
+  const checkCompletedWords = (inputs: string[][]) => {
+    console.log('Checking completed words...', inputs);
+    const newCompletedWords: string[] = [];
+
+    words.forEach(wordDef => {
+      const { word, startRow, startCol, direction } = wordDef;
+      let isComplete = true;
+      let userWord = '';
+      
+      console.log(`Checking word: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
+      
+      for (let i = 0; i < word.length; i++) {
+        const row = direction === 'horizontal' ? startRow : startRow + i;
+        const col = direction === 'horizontal' ? startCol + i : startCol;
+        
+        if (row >= gridSize || col >= gridSize) {
+          console.log(`Out of bounds for ${word} at position ${i}: (${row}, ${col})`);
+          isComplete = false;
+          break;
+        }
+        
+        const userChar = inputs[row] && inputs[row][col] ? inputs[row][col] : '';
+        const expectedChar = word[i];
+        userWord += userChar;
+        
+        if (userChar !== expectedChar) {
+          isComplete = false;
+        }
+      }
+      
+      console.log(`Word ${word}: expected="${word}", user="${userWord}", complete=${isComplete}`);
+      
+      if (isComplete) {
+        newCompletedWords.push(word);
+      }
+    });
+
+    console.log('New completed words:', newCompletedWords);
+    console.log('Previously completed words:', completedWords);
+
+    // Encontrar palavras recém-completadas
+    const justCompleted = newCompletedWords.filter(word => !completedWords.includes(word));
+    
+    if (justCompleted.length > 0) {
+      console.log('Just completed words:', justCompleted);
+      setCompletedWords(newCompletedWords);
+      
+      // Calcular pontos para palavras recém-completadas
+      const newPoints = justCompleted.reduce((total, word) => total + (word.length * 10), 0);
+      setScore(prev => {
+        const newScore = prev + newPoints;
+        console.log(`Score updated: ${prev} + ${newPoints} = ${newScore}`);
+        return newScore;
+      });
+    }
+
+    // Verificar se o jogo foi completado
+    if (newCompletedWords.length === words.length && !isCompleted) {
+      console.log('Game completed!');
+      setIsCompleted(true);
+      const finalScore = score + Math.floor(timeLeft / 15);
+      onComplete(finalScore);
+    }
+  };
+
+  const isWordCell = (row: number, col: number) => {
+    if (!isGridInitialized || !grid[row] || row >= gridSize || col >= gridSize) {
+      return false;
+    }
+    return grid[row][col] !== '';
+  };
+
+  const getWordNumber = (row: number, col: number) => {
+    const word = words.find(w => w.startRow === row && w.startCol === col);
+    return word?.number || '';
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return {
+    score,
+    timeLeft,
+    isCompleted,
+    completedWords,
+    grid,
+    userInputs,
+    isGridInitialized,
+    handleInputChange,
+    isWordCell,
+    getWordNumber,
+    formatTime
+  };
+};
