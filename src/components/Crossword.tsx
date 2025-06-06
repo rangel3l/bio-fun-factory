@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,7 +30,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   const [isGridInitialized, setIsGridInitialized] = useState(false);
 
   const words: WordDefinition[] = [
-    { word: 'SUSTENTABILIDADE', clue: 'Desenvolvimento que atende às necessidades presentes sem comprometer o futuro', startRow: 2, startCol: 1, direction: 'horizontal', number: 1 },
+    { word: 'SUSTENTAVEL', clue: 'Desenvolvimento que atende às necessidades presentes sem comprometer o futuro', startRow: 2, startCol: 1, direction: 'horizontal', number: 1 },
     { word: 'RECICLAGEM', clue: 'Processo de transformação de resíduos em novos produtos', startRow: 0, startCol: 1, direction: 'vertical', number: 2 },
     { word: 'BIODIVERSIDADE', clue: 'Variedade de formas de vida na Terra', startRow: 4, startCol: 0, direction: 'horizontal', number: 3 },
     { word: 'CARBONO', clue: 'Principal elemento responsável pelo efeito estufa', startRow: 1, startCol: 5, direction: 'vertical', number: 4 },
