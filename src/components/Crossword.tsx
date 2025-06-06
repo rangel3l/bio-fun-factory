@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -94,37 +95,67 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
   };
 
   const checkCompletedWords = (inputs: string[][]) => {
-    const completed: string[] = [];
-    let totalScore = 0;
+    console.log('Checking completed words...', inputs);
+    const newCompletedWords: string[] = [];
 
     words.forEach(wordDef => {
       const { word, startRow, startCol, direction } = wordDef;
       let isComplete = true;
+      let userWord = '';
+      
+      console.log(`Checking word: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
       
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
         
-        if (row >= gridSize || col >= gridSize || inputs[row][col] !== word[i]) {
+        if (row >= gridSize || col >= gridSize) {
+          console.log(`Out of bounds for ${word} at position ${i}: (${row}, ${col})`);
           isComplete = false;
           break;
         }
+        
+        const userChar = inputs[row] && inputs[row][col] ? inputs[row][col] : '';
+        const expectedChar = word[i];
+        userWord += userChar;
+        
+        if (userChar !== expectedChar) {
+          isComplete = false;
+        }
       }
       
-      if (isComplete && !completedWords.includes(word)) {
-        completed.push(word);
-        totalScore += word.length * 10;
+      console.log(`Word ${word}: expected="${word}", user="${userWord}", complete=${isComplete}`);
+      
+      if (isComplete) {
+        newCompletedWords.push(word);
       }
     });
 
-    if (completed.length > completedWords.length) {
-      setCompletedWords(prev => [...new Set([...prev, ...completed])]);
-      setScore(prev => prev + (completed.length - completedWords.length) * 50);
+    console.log('New completed words:', newCompletedWords);
+    console.log('Previously completed words:', completedWords);
+
+    // Encontrar palavras recém-completadas
+    const justCompleted = newCompletedWords.filter(word => !completedWords.includes(word));
+    
+    if (justCompleted.length > 0) {
+      console.log('Just completed words:', justCompleted);
+      setCompletedWords(newCompletedWords);
+      
+      // Calcular pontos para palavras recém-completadas
+      const newPoints = justCompleted.reduce((total, word) => total + (word.length * 10), 0);
+      setScore(prev => {
+        const newScore = prev + newPoints;
+        console.log(`Score updated: ${prev} + ${newPoints} = ${newScore}`);
+        return newScore;
+      });
     }
 
-    if (completed.length === words.length) {
+    // Verificar se o jogo foi completado
+    if (newCompletedWords.length === words.length && !isCompleted) {
+      console.log('Game completed!');
       setIsCompleted(true);
-      onComplete(score + totalScore);
+      const finalScore = score + Math.floor(timeLeft / 15);
+      onComplete(finalScore);
     }
   };
 
