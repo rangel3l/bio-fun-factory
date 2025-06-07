@@ -48,26 +48,37 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   };
 
   const handleGiveUp = () => {
+    console.log('handleGiveUp called - starting process');
     setHasGivenUp(true);
-    setScore(0); // Zerar pontuação
+    setScore(0);
     
-    // Preencher todas as respostas corretas
-    const newInputs = [...userInputs];
-    words.forEach(wordDef => {
+    // Criar uma nova cópia do array userInputs
+    const newInputs: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+    
+    console.log('Filling grid with correct answers...');
+    words.forEach((wordDef, index) => {
       const { word, startRow, startCol, direction } = wordDef;
+      console.log(`Processing word ${index + 1}: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
+      
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
+        
         if (row < gridSize && col < gridSize) {
           newInputs[row][col] = word[i];
+          console.log(`Set cell (${row}, ${col}) = ${word[i]}`);
+        } else {
+          console.log(`Out of bounds: (${row}, ${col}) for word ${word}`);
         }
       }
     });
     
+    console.log('New inputs array:', newInputs);
     setUserInputs(newInputs);
     setCompletedWords(words.map(w => w.word));
     setIsCompleted(true);
-    onComplete(0); // Chamar onComplete com pontuação zero
+    console.log('handleGiveUp completed');
+    onComplete(0);
   };
 
   const handleInputChange = (row: number, col: number, value: string) => {
