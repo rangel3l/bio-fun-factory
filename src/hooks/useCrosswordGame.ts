@@ -6,6 +6,7 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(900); // 15 minutos
   const [isCompleted, setIsCompleted] = useState(false);
+  const [hasGivenUp, setHasGivenUp] = useState(false);
   const [completedWords, setCompletedWords] = useState<string[]>([]);
   const [grid, setGrid] = useState<string[][]>([]);
   const [userInputs, setUserInputs] = useState<string[][]>([]);
@@ -16,14 +17,14 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   }, []);
 
   useEffect(() => {
-    if (timeLeft > 0 && !isCompleted) {
+    if (timeLeft > 0 && !isCompleted && !hasGivenUp) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
       setIsCompleted(true);
       onComplete(score);
     }
-  }, [timeLeft, isCompleted, score, onComplete]);
+  }, [timeLeft, isCompleted, hasGivenUp, score, onComplete]);
 
   const initializeGrid = () => {
     const newGrid: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
@@ -46,8 +47,31 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
     setIsGridInitialized(true);
   };
 
+  const handleGiveUp = () => {
+    setHasGivenUp(true);
+    setScore(0); // Zerar pontuação
+    
+    // Preencher todas as respostas corretas
+    const newInputs = [...userInputs];
+    words.forEach(wordDef => {
+      const { word, startRow, startCol, direction } = wordDef;
+      for (let i = 0; i < word.length; i++) {
+        const row = direction === 'horizontal' ? startRow : startRow + i;
+        const col = direction === 'horizontal' ? startCol + i : startCol;
+        if (row < gridSize && col < gridSize) {
+          newInputs[row][col] = word[i];
+        }
+      }
+    });
+    
+    setUserInputs(newInputs);
+    setCompletedWords(words.map(w => w.word));
+    setIsCompleted(true);
+    onComplete(0); // Chamar onComplete com pontuação zero
+  };
+
   const handleInputChange = (row: number, col: number, value: string) => {
-    if (value.length > 1) return;
+    if (value.length > 1 || hasGivenUp) return;
     
     const newInputs = [...userInputs];
     newInputs[row][col] = value.toUpperCase();
@@ -57,6 +81,8 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   };
 
   const checkCompletedWords = (inputs: string[][]) => {
+    if (hasGivenUp) return;
+    
     console.log('Checking completed words...', inputs);
     const newCompletedWords: string[] = [];
 
@@ -143,11 +169,13 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
     score,
     timeLeft,
     isCompleted,
+    hasGivenUp,
     completedWords,
     grid,
     userInputs,
     isGridInitialized,
     handleInputChange,
+    handleGiveUp,
     isWordCell,
     getWordNumber,
     formatTime

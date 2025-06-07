@@ -15,11 +15,13 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
     score,
     timeLeft,
     isCompleted,
+    hasGivenUp,
     completedWords,
     grid,
     userInputs,
     isGridInitialized,
     handleInputChange,
+    handleGiveUp,
     isWordCell,
     getWordNumber,
     formatTime
@@ -44,6 +46,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
         score={score}
         timeLeft={timeLeft}
         completedWords={completedWords}
+        hasGivenUp={hasGivenUp}
       />
     );
   }
@@ -55,6 +58,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
         score={score}
         completedWords={completedWords}
         formatTime={formatTime}
+        onGiveUp={handleGiveUp}
       />
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
