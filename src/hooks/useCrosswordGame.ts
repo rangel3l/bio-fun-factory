@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { words, gridSize } from '../data/crosswordWords';
 
@@ -76,9 +75,10 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
     console.log('New inputs array:', newInputs);
     setUserInputs(newInputs);
     setCompletedWords(words.map(w => w.word));
-    setIsCompleted(true);
+    // NÃO marcar como completado para manter na tela do jogo
+    // setIsCompleted(true);
     console.log('handleGiveUp completed');
-    onComplete(0);
+    // onComplete(0); // Não chamar onComplete para não sair da tela
   };
 
   const handleInputChange = (row: number, col: number, value: string) => {

@@ -23,6 +23,7 @@ interface CrosswordHeaderProps {
   completedWords: string[];
   formatTime: (seconds: number) => string;
   onGiveUp: () => void;
+  hasGivenUp?: boolean;
 }
 
 const CrosswordHeader: React.FC<CrosswordHeaderProps> = ({
@@ -30,7 +31,8 @@ const CrosswordHeader: React.FC<CrosswordHeaderProps> = ({
   score,
   completedWords,
   formatTime,
-  onGiveUp
+  onGiveUp,
+  hasGivenUp = false
 }) => {
   const handlePrintPDF = () => {
     generateCrosswordPDF();
@@ -88,32 +90,44 @@ const CrosswordHeader: React.FC<CrosswordHeaderProps> = ({
 
       <Card className="border-red-200 bg-white/80 backdrop-blur-sm">
         <CardContent className="flex items-center justify-center p-3 sm:p-4">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                variant="destructive" 
-                className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full"
-              >
-                <Flag className="w-4 h-4" />
-                <span className="hidden sm:inline">Desistir</span>
-                <span className="sm:hidden">Desistir</span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Desistir do jogo?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Tem certeza que deseja desistir? Você verá todas as respostas, mas não receberá pontos neste jogo.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction onClick={handleGiveUp}>
-                  Confirmar Desistência
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {hasGivenUp ? (
+            <Button 
+              variant="destructive" 
+              disabled
+              className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full opacity-50"
+            >
+              <Flag className="w-4 h-4" />
+              <span className="hidden sm:inline">Desistiu</span>
+              <span className="sm:hidden">Desistiu</span>
+            </Button>
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  variant="destructive" 
+                  className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm w-full"
+                >
+                  <Flag className="w-4 h-4" />
+                  <span className="hidden sm:inline">Desistir</span>
+                  <span className="sm:hidden">Desistir</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Desistir do jogo?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Tem certeza que deseja desistir? Você verá todas as respostas, mas não receberá pontos neste jogo.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleGiveUp}>
+                    Confirmar Desistência
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </CardContent>
       </Card>
     </div>

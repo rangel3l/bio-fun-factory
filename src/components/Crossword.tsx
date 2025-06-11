@@ -40,7 +40,8 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
     );
   }
 
-  if (isCompleted) {
+  // Só mostrar a tela de conclusão se realmente completou o jogo (não desistiu)
+  if (isCompleted && !hasGivenUp) {
     return (
       <CrosswordCompletion
         score={score}
@@ -53,12 +54,21 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-0">
+      {hasGivenUp && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="text-red-700 text-center font-semibold">
+            🏳️ Você desistiu do jogo! Todas as respostas foram reveladas em verde.
+          </div>
+        </div>
+      )}
+      
       <CrosswordHeader
         timeLeft={timeLeft}
         score={score}
         completedWords={completedWords}
         formatTime={formatTime}
         onGiveUp={handleGiveUp}
+        hasGivenUp={hasGivenUp}
       />
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
@@ -71,6 +81,7 @@ const Crossword: React.FC<CrosswordProps> = ({ onComplete }) => {
             getWordNumber={getWordNumber}
             handleInputChange={handleInputChange}
             isCompleted={isCompleted}
+            hasGivenUp={hasGivenUp}
           />
         </div>
 

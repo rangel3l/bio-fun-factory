@@ -13,6 +13,7 @@ interface CrosswordGridProps {
   getWordNumber: (row: number, col: number) => string | number;
   handleInputChange: (row: number, col: number, value: string) => void;
   isCompleted: boolean;
+  hasGivenUp?: boolean;
 }
 
 const CrosswordGrid: React.FC<CrosswordGridProps> = ({
@@ -22,7 +23,8 @@ const CrosswordGrid: React.FC<CrosswordGridProps> = ({
   isWordCell,
   getWordNumber,
   handleInputChange,
-  isCompleted
+  isCompleted,
+  hasGivenUp = false
 }) => {
   return (
     <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
@@ -30,6 +32,9 @@ const CrosswordGrid: React.FC<CrosswordGridProps> = ({
         <CardTitle className="text-center text-green-800 flex items-center justify-center gap-2 text-base sm:text-xl">
           <Grid3X3 className="w-5 h-5 sm:w-6 sm:h-6" />
           Palavras Cruzadas Verdes
+          {hasGivenUp && (
+            <span className="text-red-600 text-sm">(Desistiu)</span>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-2 sm:p-4">
@@ -62,7 +67,7 @@ const CrosswordGrid: React.FC<CrosswordGridProps> = ({
                       w-6 h-6 sm:w-8 sm:h-8 
                       border-2 rounded relative 
                       flex items-center justify-center
-                      ${isWordCompleted 
+                      ${hasGivenUp || isWordCompleted
                         ? 'bg-green-500 text-white border-green-600' 
                         : 'bg-white border-gray-300'
                       }
@@ -76,12 +81,12 @@ const CrosswordGrid: React.FC<CrosswordGridProps> = ({
                         className={`
                           w-5 h-5 sm:w-6 sm:h-6 p-0 border-none text-center uppercase
                           text-xs sm:text-sm font-bold bg-transparent focus:ring-0
-                          ${isWordCompleted ? 'text-white' : 'text-green-800'}
+                          ${hasGivenUp || isWordCompleted ? 'text-white' : 'text-green-800'}
                         `}
                         value={userInputs[row][col]}
                         onChange={(e) => handleInputChange(row, col, e.target.value)}
                         maxLength={1}
-                        disabled={isCompleted}
+                        disabled={isCompleted || hasGivenUp}
                       />
                     </div>
                   ) : (
