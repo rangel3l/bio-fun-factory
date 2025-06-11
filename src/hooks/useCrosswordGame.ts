@@ -37,53 +37,47 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
       console.log(`Placing word ${index + 1}: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
       
       // Verificar se a palavra cabe no grid
-      if (direction === 'horizontal') {
-        if (startCol + word.length > gridSize) {
-          console.error(`Word ${word} exceeds horizontal grid bounds`);
-          return;
-        }
-      } else {
-        if (startRow + word.length > gridSize) {
-          console.error(`Word ${word} exceeds vertical grid bounds`);
-          return;
-        }
+      const endRow = direction === 'vertical' ? startRow + word.length - 1 : startRow;
+      const endCol = direction === 'horizontal' ? startCol + word.length - 1 : startCol;
+      
+      if (endRow >= gridSize || endCol >= gridSize || startRow < 0 || startCol < 0) {
+        console.error(`Word ${word} exceeds grid bounds: (${startRow}, ${startCol}) to (${endRow}, ${endCol})`);
+        return;
       }
 
-      // Verificar cruzamentos válidos
+      // Verificar e colocar cada letra
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
+        const letter = word[i];
         
-        if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
-          // Se já existe uma letra na posição, verificar se é a mesma
-          if (newGrid[row][col] !== '' && newGrid[row][col] !== word[i]) {
-            console.error(`Conflict at (${row}, ${col}): existing '${newGrid[row][col]}' vs new '${word[i]}' for word ${word}`);
-            return;
-          }
-          newGrid[row][col] = word[i];
-          console.log(`Set cell (${row}, ${col}) = ${word[i]}`);
+        // Se já existe uma letra na posição, verificar se é a mesma (cruzamento válido)
+        if (newGrid[row][col] !== '' && newGrid[row][col] !== letter) {
+          console.error(`Conflict at (${row}, ${col}): existing '${newGrid[row][col]}' vs new '${letter}' for word ${word}`);
+          return;
         }
+        
+        newGrid[row][col] = letter;
+        console.log(`Set cell (${row}, ${col}) = ${letter}`);
       }
     });
 
-    console.log('Grid initialization complete:', newGrid);
+    console.log('Grid initialization complete');
     setGrid(newGrid);
     setUserInputs(newUserInputs);
     setIsGridInitialized(true);
   };
 
   const handleGiveUp = () => {
-    console.log('handleGiveUp called - starting process');
+    console.log('handleGiveUp called - revealing all answers');
     setHasGivenUp(true);
     setScore(0);
     
-    // Criar uma nova cópia do array userInputs
+    // Criar uma nova cópia do array userInputs preenchida com as respostas
     const newInputs: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
     
-    console.log('Filling grid with correct answers...');
-    words.forEach((wordDef, index) => {
+    words.forEach((wordDef) => {
       const { word, startRow, startCol, direction } = wordDef;
-      console.log(`Processing word ${index + 1}: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
       
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
@@ -91,17 +85,12 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
         
         if (row < gridSize && col < gridSize && row >= 0 && col >= 0) {
           newInputs[row][col] = word[i];
-          console.log(`Set cell (${row}, ${col}) = ${word[i]}`);
-        } else {
-          console.log(`Out of bounds: (${row}, ${col}) for word ${word}`);
         }
       }
     });
     
-    console.log('New inputs array:', newInputs);
     setUserInputs(newInputs);
     setCompletedWords(words.map(w => w.word));
-    console.log('handleGiveUp completed');
   };
 
   const handleInputChange = (row: number, col: number, value: string) => {
@@ -117,64 +106,48 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   const checkCompletedWords = (inputs: string[][]) => {
     if (hasGivenUp) return;
     
-    console.log('Checking completed words...', inputs);
     const newCompletedWords: string[] = [];
 
     words.forEach(wordDef => {
       const { word, startRow, startCol, direction } = wordDef;
       let isComplete = true;
-      let userWord = '';
-      
-      console.log(`Checking word: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
       
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
         
         if (row >= gridSize || col >= gridSize || row < 0 || col < 0) {
-          console.log(`Out of bounds for ${word} at position ${i}: (${row}, ${col})`);
           isComplete = false;
           break;
         }
         
         const userChar = inputs[row] && inputs[row][col] ? inputs[row][col] : '';
         const expectedChar = word[i];
-        userWord += userChar;
         
         if (userChar !== expectedChar) {
           isComplete = false;
+          break;
         }
       }
-      
-      console.log(`Word ${word}: expected="${word}", user="${userWord}", complete=${isComplete}`);
       
       if (isComplete) {
         newCompletedWords.push(word);
       }
     });
 
-    console.log('New completed words:', newCompletedWords);
-    console.log('Previously completed words:', completedWords);
-
     // Encontrar palavras recém-completadas
     const justCompleted = newCompletedWords.filter(word => !completedWords.includes(word));
     
     if (justCompleted.length > 0) {
-      console.log('Just completed words:', justCompleted);
       setCompletedWords(newCompletedWords);
       
       // Calcular pontos para palavras recém-completadas
       const newPoints = justCompleted.reduce((total, word) => total + (word.length * 10), 0);
-      setScore(prev => {
-        const newScore = prev + newPoints;
-        console.log(`Score updated: ${prev} + ${newPoints} = ${newScore}`);
-        return newScore;
-      });
+      setScore(prev => prev + newPoints);
     }
 
     // Verificar se o jogo foi completado
     if (newCompletedWords.length === words.length && !isCompleted) {
-      console.log('Game completed!');
       setIsCompleted(true);
       const finalScore = score + Math.floor(timeLeft / 15);
       onComplete(finalScore);
