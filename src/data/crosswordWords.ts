@@ -3,26 +3,24 @@ import { WordDefinition } from '../types/crossword';
 
 export const words: WordDefinition[] = [
   // Palavra principal horizontal no centro
-  { word: 'NATUREZA', clue: 'Conjunto de todos os seres vivos e não vivos', startRow: 5, startCol: 2, direction: 'horizontal', number: 1 },
+  { word: 'MEIO', clue: 'Ambiente onde vivemos', startRow: 4, startCol: 2, direction: 'horizontal', number: 1 },
   
-  // Palavras verticais que cruzam com NATUREZA
-  { word: 'AGUA', clue: 'Recurso natural essencial para a vida', startRow: 3, startCol: 2, direction: 'vertical', number: 2 }, // cruza no N
-  { word: 'TERRA', clue: 'Nosso planeta azul', startRow: 4, startCol: 4, direction: 'vertical', number: 3 }, // cruza no T
-  { word: 'VERDE', clue: 'Cor associada à sustentabilidade', startRow: 2, startCol: 6, direction: 'vertical', number: 4 }, // cruza no R
-  { word: 'SOLAR', clue: 'Energia renovável do sol', startRow: 4, startCol: 8, direction: 'vertical', number: 5 }, // cruza no Z
+  // Palavras verticais que cruzam com MEIO
+  { word: 'MAR', clue: 'Grande massa de água salgada', startRow: 4, startCol: 2, direction: 'vertical', number: 2 }, // cruza no M
+  { word: 'ECO', clue: 'Prefixo relacionado à casa/ambiente', startRow: 3, startCol: 3, direction: 'vertical', number: 3 }, // cruza no E
+  { word: 'RIO', clue: 'Curso de água doce', startRow: 2, startCol: 4, direction: 'vertical', number: 4 }, // cruza no I
+  { word: 'SOL', clue: 'Estrela que nos fornece energia', startRow: 3, startCol: 5, direction: 'vertical', number: 5 }, // cruza no O
   
   // Palavras horizontais que cruzam com as verticais
-  { word: 'ECO', clue: 'Prefixo relacionado ao meio ambiente', startRow: 2, startCol: 6, direction: 'horizontal', number: 6 }, // cruza com VERDE no E
-  { word: 'AR', clue: 'Mistura de gases que respiramos', startRow: 3, startCol: 1, direction: 'horizontal', number: 7 }, // cruza com AGUA no A
-  { word: 'CLIMA', clue: 'Condições atmosféricas de uma região', startRow: 6, startCol: 3, direction: 'horizontal', number: 8 }, // cruza com TERRA no L
+  { word: 'VERDE', clue: 'Cor da natureza', startRow: 2, startCol: 4, direction: 'horizontal', number: 6 }, // cruza com RIO no R
+  { word: 'AGUA', clue: 'Líquido essencial à vida', startRow: 6, startCol: 2, direction: 'horizontal', number: 7 }, // cruza com MAR no A
+  { word: 'TERRA', clue: 'Nosso planeta', startRow: 3, startCol: 1, direction: 'horizontal', number: 8 }, // cruza com ECO no E
   
-  // Palavras adicionais para completar o grid
-  { word: 'OXIGENIO', clue: 'Gás vital produzido pelas plantas', startRow: 0, startCol: 7, direction: 'vertical', number: 9 },
-  { word: 'FLORESTA', clue: 'Ecossistema rico em árvores', startRow: 1, startCol: 0, direction: 'horizontal', number: 10 },
-  { word: 'RECICLAR', clue: 'Transformar resíduos em novos produtos', startRow: 7, startCol: 1, direction: 'horizontal', number: 11 },
-  
-  // Palavra vertical longa à direita
-  { word: 'SUSTENTAVEL', clue: 'Desenvolvimento que preserva o futuro', startRow: 0, startCol: 10, direction: 'vertical', number: 12 }
+  // Palavras adicionais
+  { word: 'VIDA', clue: 'Existência dos seres vivos', startRow: 0, startCol: 6, direction: 'vertical', number: 9 },
+  { word: 'AR', clue: 'Mistura gasosa que respiramos', startRow: 1, startCol: 0, direction: 'horizontal', number: 10 },
+  { word: 'FOLHA', clue: 'Parte verde das plantas', startRow: 5, startCol: 8, direction: 'vertical', number: 11 },
+  { word: 'CASA', clue: 'Local onde moramos', startRow: 7, startCol: 3, direction: 'horizontal', number: 12 }
 ];
 
-export const gridSize = 15;
+export const gridSize = 12;

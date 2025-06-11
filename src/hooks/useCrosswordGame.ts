@@ -54,15 +54,15 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
         // Se já existe uma letra na posição, verificar se é a mesma (cruzamento válido)
         if (newGrid[row][col] !== '' && newGrid[row][col] !== letter) {
           console.error(`Conflict at (${row}, ${col}): existing '${newGrid[row][col]}' vs new '${letter}' for word ${word}`);
-          return;
+        } else {
+          newGrid[row][col] = letter;
+          console.log(`Set cell (${row}, ${col}) = ${letter}`);
         }
-        
-        newGrid[row][col] = letter;
-        console.log(`Set cell (${row}, ${col}) = ${letter}`);
       }
     });
 
     console.log('Grid initialization complete');
+    console.log('Final grid:', newGrid.map(row => row.join(' ')));
     setGrid(newGrid);
     setUserInputs(newUserInputs);
     setIsGridInitialized(true);
