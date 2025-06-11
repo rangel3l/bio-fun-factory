@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { words, gridSize } from '../data/crosswordWords';
 
@@ -26,21 +27,46 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   }, [timeLeft, isCompleted, hasGivenUp, score, onComplete]);
 
   const initializeGrid = () => {
+    console.log('Initializing grid...');
     const newGrid: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
     const newUserInputs: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
 
-    // Preencher o grid com as palavras
-    words.forEach(wordDef => {
+    // Validar e preencher o grid com as palavras
+    words.forEach((wordDef, index) => {
       const { word, startRow, startCol, direction } = wordDef;
+      console.log(`Placing word ${index + 1}: ${word} at (${startRow}, ${startCol}) direction: ${direction}`);
+      
+      // Verificar se a palavra cabe no grid
+      if (direction === 'horizontal') {
+        if (startCol + word.length > gridSize) {
+          console.error(`Word ${word} exceeds horizontal grid bounds`);
+          return;
+        }
+      } else {
+        if (startRow + word.length > gridSize) {
+          console.error(`Word ${word} exceeds vertical grid bounds`);
+          return;
+        }
+      }
+
+      // Verificar cruzamentos válidos
       for (let i = 0; i < word.length; i++) {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
-        if (row < gridSize && col < gridSize) {
+        
+        if (row >= 0 && row < gridSize && col >= 0 && col < gridSize) {
+          // Se já existe uma letra na posição, verificar se é a mesma
+          if (newGrid[row][col] !== '' && newGrid[row][col] !== word[i]) {
+            console.error(`Conflict at (${row}, ${col}): existing '${newGrid[row][col]}' vs new '${word[i]}' for word ${word}`);
+            return;
+          }
           newGrid[row][col] = word[i];
+          console.log(`Set cell (${row}, ${col}) = ${word[i]}`);
         }
       }
     });
 
+    console.log('Grid initialization complete:', newGrid);
     setGrid(newGrid);
     setUserInputs(newUserInputs);
     setIsGridInitialized(true);
@@ -63,7 +89,7 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
         
-        if (row < gridSize && col < gridSize) {
+        if (row < gridSize && col < gridSize && row >= 0 && col >= 0) {
           newInputs[row][col] = word[i];
           console.log(`Set cell (${row}, ${col}) = ${word[i]}`);
         } else {
@@ -75,10 +101,7 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
     console.log('New inputs array:', newInputs);
     setUserInputs(newInputs);
     setCompletedWords(words.map(w => w.word));
-    // NÃO marcar como completado para manter na tela do jogo
-    // setIsCompleted(true);
     console.log('handleGiveUp completed');
-    // onComplete(0); // Não chamar onComplete para não sair da tela
   };
 
   const handleInputChange = (row: number, col: number, value: string) => {
@@ -108,7 +131,7 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
         const row = direction === 'horizontal' ? startRow : startRow + i;
         const col = direction === 'horizontal' ? startCol + i : startCol;
         
-        if (row >= gridSize || col >= gridSize) {
+        if (row >= gridSize || col >= gridSize || row < 0 || col < 0) {
           console.log(`Out of bounds for ${word} at position ${i}: (${row}, ${col})`);
           isComplete = false;
           break;
@@ -159,7 +182,7 @@ export const useCrosswordGame = (onComplete: (score: number) => void) => {
   };
 
   const isWordCell = (row: number, col: number) => {
-    if (!isGridInitialized || !grid[row] || row >= gridSize || col >= gridSize) {
+    if (!isGridInitialized || !grid[row] || row >= gridSize || col >= gridSize || row < 0 || col < 0) {
       return false;
     }
     return grid[row][col] !== '';
